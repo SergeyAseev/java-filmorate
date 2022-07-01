@@ -15,13 +15,13 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
-    Integer id;
+    private Integer id;
     @Email
-    String email;
+    private String email;
     @NotBlank
-    String login;
-    String name;
-    LocalDate birthday;
+    private String login;
+    private String name;
+    private LocalDate birthday;
 }
 
 

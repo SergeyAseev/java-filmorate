@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -22,7 +23,7 @@ public class UserController {
      * @return список всех значений LinkedHashMap, которая хранит всех пользователей
      */
     @GetMapping("users")
-    public Iterable<User> findAll() {
+    public List<User> findAll() {
         return new ArrayList<>(users.values());
     }
 
@@ -36,6 +37,7 @@ public class UserController {
         validate(user);
         user.setId(generateId());
         users.put(user.getId(), user);
+        log.info("Пользователь c ID {} успешно добавлен", user.getId());
         return user;
     }
 
@@ -53,6 +55,7 @@ public class UserController {
         }
         validate(user);
         users.put(user.getId(), user);
+        log.info("Пользователь c ID {} успешно обновлен", user.getId());
         return user;
     }
 
@@ -60,7 +63,7 @@ public class UserController {
      * Проверка создаваемого пользователя на валидность
      * @param user экземпляр текущего пользователя
      */
-    void validate(User user) {
+    protected void validate(User user) {
         if (user.getBirthday().isAfter(LocalDate.now())) {
             throw new ValidationException("Дата рождения не может быть позже текущей даты");
         }

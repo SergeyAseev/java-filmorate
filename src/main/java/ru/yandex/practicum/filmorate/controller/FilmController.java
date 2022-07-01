@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -22,7 +23,7 @@ public class FilmController {
      * @return список всех значений LinkedHashMap, которая хранит все фильмы
      */
     @GetMapping("films")
-    public Iterable<Film> findAll() {
+    public List<Film> findAll() {
         return new ArrayList<>(films.values());
     }
 
@@ -36,6 +37,7 @@ public class FilmController {
         validate(film);
         film.setId(generateId());
         films.put(film.getId(), film);
+        log.info("Фильм c ID {} успешно добавлен", film.getId());
         return film;
     }
 
@@ -53,6 +55,7 @@ public class FilmController {
         }
         validate(film);
         films.put(film.getId(), film);
+        log.info("Фильм c ID {} успешно обновлен", film.getId());
         return film;
     }
 
@@ -60,7 +63,7 @@ public class FilmController {
      * Проверка создаваемого фильма на валидность
      * @param film экземпляр текущего фильма
      */
-    void validate(Film film) {
+    protected void validate(Film film) {
         if (film.getName().isEmpty()) {
             throw new ValidationException("Название не может быть пустым");
         }
