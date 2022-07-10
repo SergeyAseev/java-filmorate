@@ -1,7 +1,8 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import ru.yandex.practicum.filmorate.model.Film;
-import java.util.ArrayList;
+
+import java.util.List;
 import java.util.Map;
 
 public interface FilmStorage {
@@ -23,7 +24,7 @@ public interface FilmStorage {
     /**
      * Удаляем фильм по ID
      */
-    void removeFilmById(int filmId);
+    void removeFilmById(long filmId);
 
     /**
      * Удаляем все фильмы
@@ -34,14 +35,14 @@ public interface FilmStorage {
      * Получаем фильм по ID
      * @return экземпляр фильма
      */
-    Film retrieveFilmById(int filmId);
+    Film retrieveFilmById(long filmId);
 
     /**
      * Получаем все фильмы
      * @return список всех значений LinkedHashMap, которая хранит все фильмы
      */
-    ArrayList<Film> retrieveAllFilms();
+    List<Film> retrieveAllFilms();
 
-    Map<Integer, Film> retrieveFilms();
+    Map<Long, Film> retrieveFilms();
 
 }

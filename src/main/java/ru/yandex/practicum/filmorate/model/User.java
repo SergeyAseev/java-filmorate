@@ -17,14 +17,14 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
-    private Integer id;
+    private Long id;
     @Email
     private String email;
     @NotBlank
     private String login;
     private String name;
     private LocalDate birthday;
-    private Set<Integer> friends = new HashSet<>(); //храним ID друзей
+    private Set<Long> friends = new HashSet<>(); //храним ID друзей
 }
 
 

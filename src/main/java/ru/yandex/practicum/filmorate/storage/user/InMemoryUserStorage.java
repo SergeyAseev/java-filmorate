@@ -2,26 +2,26 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @Component
 public class InMemoryUserStorage implements UserStorage {
 
-    protected int userId = 0;
-    private final Map<Integer, User> users = new LinkedHashMap<Integer, User>();
+    protected long userId = 0;
+    private final Map<Long, User> users = new LinkedHashMap<Long, User>();
 
     /**
      * увеличивает уникальный идентификатор пользователя
      */
-    protected int generateId() {
+    protected long generateId() {
         return ++userId;
     }
 
@@ -36,10 +36,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User updateUser(User user) {
-        if (!users.containsKey(user.getId())) {
-            throw new NotFoundException(String.format(
-                    "Пользователь %s не найден", user.getId()));
-        }
         validate(user);
         users.put(user.getId(), user);
         log.info("Пользователь c ID {} успешно обновлен", user.getId());
@@ -47,7 +43,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void removeUserById(int userId) {
+    public void removeUserById(long userId) {
         if (!users.containsKey(userId)) {
             return;
         }
@@ -62,22 +58,17 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User retrieveUserById(int userId) {
-        if (!users.containsKey(userId)) {
-            throw new NotFoundException(String.format(
-                    "Нельзя удалить пользователя с ID %s", userId));
-        }
-
+    public User retrieveUserById(long userId) {
         return users.get(userId);
     }
 
     @Override
-    public ArrayList<User> retrieveAllUsers() {
+    public List<User> retrieveAllUsers() {
         return new ArrayList<>(users.values());
     }
 
     @Override
-    public Map<Integer, User> retrieveUsers() {
+    public Map<Long, User> retrieveUsers() {
         return users;
     }
 

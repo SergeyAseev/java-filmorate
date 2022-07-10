@@ -2,26 +2,26 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
 
-    private int filmId = 0;
-    private final Map<Integer, Film> films = new LinkedHashMap<Integer, Film>();
+    private long filmId = 0;
+    private final Map<Long, Film> films = new LinkedHashMap<Long, Film>();
 
     /**
      * увеличивает уникальный идентификатор фильма
      */
-    protected int increaseId() {
+    protected long increaseId() {
         return ++filmId;
     }
 
@@ -36,9 +36,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
-        if (!films.containsKey(film.getId())) {
-            throw new NotFoundException(String.format("Не найден фильм с ID %s", film.getId()));
-        }
         validate(film);
         films.put(film.getId(), film);
         log.info("Фильм c ID {} успешно обновлен", film.getId());
@@ -46,7 +43,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void removeFilmById(int filmId) {
+    public void removeFilmById(long filmId) {
         if (!films.containsKey(filmId)) {
             return;
         }
@@ -61,20 +58,17 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film retrieveFilmById(int filmId) {
-        if (!films.containsKey(filmId)) {
-            throw new NotFoundException(String.format("Нельзя удалить фильм с ID %s", filmId));
-        }
+    public Film retrieveFilmById(long filmId) {
         return films.get(filmId);
     }
 
     @Override
-    public ArrayList<Film> retrieveAllFilms() {
+    public List<Film> retrieveAllFilms() {
         return new ArrayList<>(films.values());
     }
 
     @Override
-    public Map<Integer, Film> retrieveFilms() {
+    public Map<Long, Film> retrieveFilms() {
         return films;
     }
 

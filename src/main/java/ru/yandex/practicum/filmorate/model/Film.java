@@ -16,11 +16,11 @@ import java.util.Set;
 @NoArgsConstructor
 public class Film {
 
-    private Integer id;
+    private Long id;
     @NotBlank
     private String name;
     private String description;
     private LocalDate releaseDate;
     private int duration;
-    private Set<Integer> likes = new HashSet<>(); //храним ID пользователей, которые поставили лайки
+    private Set<Long> likes = new HashSet<>(); //храним ID пользователей, которые поставили лайки
 }

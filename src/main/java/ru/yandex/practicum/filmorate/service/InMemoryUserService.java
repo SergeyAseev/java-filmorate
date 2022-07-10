@@ -27,7 +27,7 @@ public class InMemoryUserService implements UserService {
     }
 
     @Override
-    public void addFriend(int userId, int friendId) {
+    public void addFriend(long userId, long friendId) {
         if(userStorage.retrieveUsers().containsKey(userId)){
             if (userStorage.retrieveUsers().containsKey(friendId)) {
                 userStorage.retrieveUserById(userId).getFriends().add(friendId);
@@ -42,7 +42,7 @@ public class InMemoryUserService implements UserService {
     }
 
     @Override
-    public void removeFriend(int userId, int friendId) {
+    public void removeFriend(long userId, long friendId) {
         if(userStorage.retrieveUsers().containsKey(userId)){
             if (userStorage.retrieveUsers().containsKey(friendId)) {
                 userStorage.retrieveUserById(userId).getFriends().remove(friendId);
@@ -57,10 +57,10 @@ public class InMemoryUserService implements UserService {
     }
 
     @Override
-    public List<User> retrieveFriends(int userId) {
+    public List<User> retrieveFriends(long userId) {
         List<User> friends = new ArrayList<>();
         if (userStorage.retrieveUsers().containsKey(userId)) {
-            for (int user : userStorage.retrieveUserById(userId).getFriends()) {
+            for (long user : userStorage.retrieveUserById(userId).getFriends()) {
                 friends.add(userStorage.retrieveUserById(user));
             }
             return friends;
@@ -70,15 +70,15 @@ public class InMemoryUserService implements UserService {
     }
 
     @Override
-    public List<User> retrieveCommonFriends(int userId, int friendId) {
+    public List<User> retrieveCommonFriends(long userId, long friendId) {
         List<User> usersList = new ArrayList<>();
         List<User> friendsList = new ArrayList<>();
         if (userStorage.retrieveUsers().containsKey(userId)) {
             if (userStorage.retrieveUsers().containsKey(friendId)) {
-                for (int user : userStorage.retrieveUserById(userId).getFriends()) {
+                for (long user : userStorage.retrieveUserById(userId).getFriends()) {
                     usersList.add(userStorage.retrieveUserById(user));
                 }
-                for (int friend : userStorage.retrieveUserById(friendId).getFriends()) {
+                for (long friend : userStorage.retrieveUserById(friendId).getFriends()) {
                     friendsList.add(userStorage.retrieveUserById(friend));
                 }
                 return usersList.stream().filter(friendsList::contains).collect(Collectors.toList());
@@ -97,11 +97,13 @@ public class InMemoryUserService implements UserService {
 
     @Override
     public User updateUser(User user) {
+        Optional.ofNullable(Optional.ofNullable(userStorage.retrieveUserById(user.getId()))
+                .orElseThrow(() -> new NotFoundException(String.format("Не найден пользователь с ID %s", user.getId()))));
         return userStorage.updateUser(user);
     }
 
     @Override
-    public void removeUserById(int userId) {
+    public void removeUserById(long userId) {
         userStorage.removeUserById(userId);
     }
 
@@ -111,12 +113,14 @@ public class InMemoryUserService implements UserService {
     }
 
     @Override
-    public User retrieveUserById(int userId) {
+    public User retrieveUserById(long userId) {
+        Optional.ofNullable(Optional.ofNullable(userStorage.retrieveUserById(userId))
+                .orElseThrow(() -> new NotFoundException(String.format("Не найден пользователь с ID %s", userId))));
         return userStorage.retrieveUserById(userId);
     }
 
     @Override
-    public ArrayList<User> retrieveAllUsers() {
+    public List<User> retrieveAllUsers() {
         return userStorage.retrieveAllUsers();
     }
 }

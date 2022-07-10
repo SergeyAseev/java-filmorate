@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public interface UserStorage {
@@ -24,7 +24,7 @@ public interface UserStorage {
     /**
      * Удаляем пользователя по ID
      */
-    void removeUserById(int userId);
+    void removeUserById(long userId);
 
     /**
      * Удаляем всех пользователей
@@ -35,14 +35,14 @@ public interface UserStorage {
      * Получаем пользователя по ID
      * @return экземпляр пользователя
      */
-    User retrieveUserById(int userId);
+    User retrieveUserById(long userId);
 
     /**
      * Получаем всех пользователей
      *
      * @return список всех значений LinkedHashMap, которая хранит всех пользователей
      */
-    ArrayList<User> retrieveAllUsers();
+    List<User> retrieveAllUsers();
 
-    Map<Integer, User> retrieveUsers();
+    Map<Long, User> retrieveUsers();
 }
