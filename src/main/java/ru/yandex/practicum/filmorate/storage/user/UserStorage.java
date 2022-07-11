@@ -4,6 +4,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface UserStorage {
 
@@ -35,7 +36,7 @@ public interface UserStorage {
      * Получаем пользователя по ID
      * @return экземпляр пользователя
      */
-    User retrieveUserById(long userId);
+    Optional<User> retrieveUserById(long userId);
 
     /**
      * Получаем всех пользователей

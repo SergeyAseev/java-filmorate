@@ -30,8 +30,8 @@ public class InMemoryUserService implements UserService {
     public void addFriend(long userId, long friendId) {
         if(userStorage.retrieveUsers().containsKey(userId)){
             if (userStorage.retrieveUsers().containsKey(friendId)) {
-                userStorage.retrieveUserById(userId).getFriends().add(friendId);
-                userStorage.retrieveUserById(friendId).getFriends().add(userId);
+                retrieveUserById(userId).getFriends().add(friendId);
+                retrieveUserById(friendId).getFriends().add(userId);
                 log.info("Пользователь {} и пользователь {} теперь друзья", userId, friendId);
             } else {
                 throw new NotFoundException(String.format("Друг с ID %d не найден", friendId));
@@ -45,8 +45,8 @@ public class InMemoryUserService implements UserService {
     public void removeFriend(long userId, long friendId) {
         if(userStorage.retrieveUsers().containsKey(userId)){
             if (userStorage.retrieveUsers().containsKey(friendId)) {
-                userStorage.retrieveUserById(userId).getFriends().remove(friendId);
-                userStorage.retrieveUserById(friendId).getFriends().remove(userId);
+                retrieveUserById(userId).getFriends().remove(friendId);
+                retrieveUserById(friendId).getFriends().remove(userId);
                 log.info("Пользователь {} и пользователь {} больше не друзья", userId, friendId);
             } else {
                 throw new NotFoundException(String.format("Друг с ID %d не найден", friendId));
@@ -60,8 +60,8 @@ public class InMemoryUserService implements UserService {
     public List<User> retrieveFriends(long userId) {
         List<User> friends = new ArrayList<>();
         if (userStorage.retrieveUsers().containsKey(userId)) {
-            for (long user : userStorage.retrieveUserById(userId).getFriends()) {
-                friends.add(userStorage.retrieveUserById(user));
+            for (long user : retrieveUserById(userId).getFriends()) {
+                friends.add(retrieveUserById(user));
             }
             return friends;
         } else {
@@ -75,11 +75,11 @@ public class InMemoryUserService implements UserService {
         List<User> friendsList = new ArrayList<>();
         if (userStorage.retrieveUsers().containsKey(userId)) {
             if (userStorage.retrieveUsers().containsKey(friendId)) {
-                for (long user : userStorage.retrieveUserById(userId).getFriends()) {
-                    usersList.add(userStorage.retrieveUserById(user));
+                for (long user : retrieveUserById(userId).getFriends()) {
+                    usersList.add(retrieveUserById(user));
                 }
-                for (long friend : userStorage.retrieveUserById(friendId).getFriends()) {
-                    friendsList.add(userStorage.retrieveUserById(friend));
+                for (long friend : retrieveUserById(friendId).getFriends()) {
+                    friendsList.add(retrieveUserById(friend));
                 }
                 return usersList.stream().filter(friendsList::contains).collect(Collectors.toList());
             } else {
@@ -97,8 +97,7 @@ public class InMemoryUserService implements UserService {
 
     @Override
     public User updateUser(User user) {
-        Optional.ofNullable(Optional.ofNullable(userStorage.retrieveUserById(user.getId()))
-                .orElseThrow(() -> new NotFoundException(String.format("Не найден пользователь с ID %s", user.getId()))));
+        retrieveUserById(user.getId());
         return userStorage.updateUser(user);
     }
 
@@ -114,9 +113,8 @@ public class InMemoryUserService implements UserService {
 
     @Override
     public User retrieveUserById(long userId) {
-        Optional.ofNullable(Optional.ofNullable(userStorage.retrieveUserById(userId))
-                .orElseThrow(() -> new NotFoundException(String.format("Не найден пользователь с ID %s", userId))));
-        return userStorage.retrieveUserById(userId);
+        return userStorage.retrieveUserById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Не найден пользователь с ID %s", userId)));
     }
 
     @Override

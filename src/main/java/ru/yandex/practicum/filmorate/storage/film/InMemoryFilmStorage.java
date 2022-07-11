@@ -6,10 +6,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -58,8 +55,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film retrieveFilmById(long filmId) {
-        return films.get(filmId);
+    public Optional<Film> retrieveFilmById(long filmId) {
+        return Optional.ofNullable(films.get(filmId));
     }
 
     @Override

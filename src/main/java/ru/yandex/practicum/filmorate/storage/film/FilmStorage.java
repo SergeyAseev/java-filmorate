@@ -4,6 +4,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface FilmStorage {
 
@@ -33,9 +34,10 @@ public interface FilmStorage {
 
     /**
      * Получаем фильм по ID
+     *
      * @return экземпляр фильма
      */
-    Film retrieveFilmById(long filmId);
+    Optional<Film> retrieveFilmById(long filmId);
 
     /**
      * Получаем все фильмы

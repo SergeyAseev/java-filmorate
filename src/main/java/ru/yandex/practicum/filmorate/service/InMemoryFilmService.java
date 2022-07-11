@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -32,8 +31,8 @@ public class InMemoryFilmService implements FilmService {
     @Override
     public void addLike(long filmId, long userId) {
         if (filmStorage.retrieveFilms().containsKey(filmId)) {
-            if (!filmStorage.retrieveFilmById(filmId).getLikes().contains(userId)) {
-                filmStorage.retrieveFilmById(filmId).getLikes().add(userId);
+            if (!retrieveFilmById(filmId).getLikes().contains(userId)) {
+                retrieveFilmById(filmId).getLikes().add(userId);
                 log.info("Пользователь с ID {} поставил лайк фильму с ID {}", userId, filmId);
             } else {
                 throw new ValidationException(String.format("Пользователь c ID %s уже " +
@@ -47,8 +46,8 @@ public class InMemoryFilmService implements FilmService {
     @Override
     public void removeLike(long filmId, long userId) {
         if (filmStorage.retrieveFilms().containsKey(filmId)) {
-            if (filmStorage.retrieveFilmById(filmId).getLikes().contains(userId)) {
-                filmStorage.retrieveFilmById(filmId).getLikes().remove(userId);
+            if (retrieveFilmById(filmId).getLikes().contains(userId)) {
+                retrieveFilmById(filmId).getLikes().remove(userId);
                 log.info("Пользователь с ID {} удалил лайк у фильма с ID {}", userId, filmId);
             } else {
                 throw new NotFoundException(String.format("Пользователь c ID %s не " +
@@ -74,8 +73,7 @@ public class InMemoryFilmService implements FilmService {
 
     @Override
     public Film updateFilm(Film film) {
-        Optional.ofNullable(filmStorage.retrieveFilmById(film.getId())).orElseThrow(() ->
-                new NotFoundException(String.format("Не найден фильм с ID %s", film.getId())));
+        retrieveFilmById(film.getId());
         return filmStorage.updateFilm(film);
     }
 
@@ -91,9 +89,8 @@ public class InMemoryFilmService implements FilmService {
 
     @Override
     public Film retrieveFilmById(long filmId) {
-        Optional.ofNullable(filmStorage.retrieveFilmById(filmId)).orElseThrow(() ->
+         return filmStorage.retrieveFilmById(filmId).orElseThrow(() ->
                 new NotFoundException(String.format("Не найден фильм с ID %s", filmId)));
-        return filmStorage.retrieveFilmById(filmId);
     }
 
     public List<Film> retrieveAllFilms() {

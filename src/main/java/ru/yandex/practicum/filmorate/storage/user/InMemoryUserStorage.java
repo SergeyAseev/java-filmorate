@@ -6,10 +6,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -58,8 +55,8 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User retrieveUserById(long userId) {
-        return users.get(userId);
+    public Optional<User> retrieveUserById(long userId) {
+        return Optional.ofNullable(users.get(userId));
     }
 
     @Override
