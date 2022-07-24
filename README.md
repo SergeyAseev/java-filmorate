@@ -1,6 +1,6 @@
 # java-filmorate
 
-![Снимок базы](https://github.com/SergeyAseev/java-filmorate/files/9176352/filmorate.pdf)
+![image](https://github.com/SergeyAseev/java-filmorate/files/9176352/filmorate.pdf)
 
 [Ссылка на схему](https://dbdiagram.io/d/62dd153c0d66c746553aa527)
 
