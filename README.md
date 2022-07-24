@@ -4,14 +4,14 @@
 
 [Ссылка на схему](https://dbdiagram.io/d/62dd153c0d66c746553aa527)
 
-Описание сущностей базы данных 
+Описание сущностей базы данных
 
 Таблицы:
 --start film
 **film** - сущность фильмы
 id - ID фильма, первичный ключ
 name - название
-description - описание 
+description - описание
 release_date - дата выхода
 duration - длительность фильма
 mpa_rating_id - внешний ключ на таблицу mpa_rating
