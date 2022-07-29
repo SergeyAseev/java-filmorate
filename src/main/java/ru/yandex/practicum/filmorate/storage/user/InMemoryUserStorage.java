@@ -1,8 +1,11 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Friends;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -48,11 +51,11 @@ public class InMemoryUserStorage implements UserStorage {
         log.info("Пользователь c ID {} успешно удален", userId);
     }
 
-    @Override
+/*    @Override
     public void removeAllUsers() {
         users.clear();
         log.info("Все пользователи удалены");
-    }
+    }*/
 
     @Override
     public Optional<User> retrieveUserById(long userId) {
@@ -67,6 +70,26 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public Map<Long, User> retrieveUsers() {
         return users;
+    }
+
+    @Override
+    public void addFriends(long userId, long friendId) {
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @Override
+    public List<User> getFriends(long userId) {
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @Override
+    public List<User> getCommonFriends(long userId, long friendId) {
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @Override
+    public void removeFromFriends(long userId, long friendId) {
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
     }
 
     /**

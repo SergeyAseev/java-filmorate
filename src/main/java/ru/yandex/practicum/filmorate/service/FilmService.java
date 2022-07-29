@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.service;
 
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.util.List;
 
@@ -29,9 +31,15 @@ public interface FilmService {
 
     void removeFilmById(long filmId);
 
-    void removeAllFilms();
-
     Film retrieveFilmById(long filmId);
 
     List<Film> retrieveAllFilms();
+
+    List<Mpa> retrieveAllMpaRatings();
+
+    Mpa retrieveMpaRatingById(int id);
+
+    List<Genre> retrieveAllGenres();
+
+    Genre retrieveGenreById(int id);
 }

@@ -27,10 +27,6 @@ public interface FilmStorage {
      */
     void removeFilmById(long filmId);
 
-    /**
-     * Удаляем все фильмы
-     */
-    void removeAllFilms();
 
     /**
      * Получаем фильм по ID
@@ -45,6 +41,8 @@ public interface FilmStorage {
      */
     List<Film> retrieveAllFilms();
 
-    Map<Long, Film> retrieveFilms();
+    void addLike(long filmId, long userId);
+
+    void removeLike(long filmId, long userId);
 
 }

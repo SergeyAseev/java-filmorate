@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
+/*
 
 @Slf4j
 @Service
@@ -95,21 +96,25 @@ public class InMemoryUserService implements UserService {
         return userStorage.createUser(user);
     }
 
-    @Override
+*/
+/*    @Override
     public User updateUser(User user) {
         retrieveUserById(user.getId());
         return userStorage.updateUser(user);
-    }
+    }*//*
+
 
     @Override
     public void removeUserById(long userId) {
         userStorage.removeUserById(userId);
     }
 
-    @Override
+*/
+/*    @Override
     public void removeAllUsers() {
         userStorage.removeAllUsers();
-    }
+    }*//*
+
 
     @Override
     public User retrieveUserById(long userId) {
@@ -122,3 +127,4 @@ public class InMemoryUserService implements UserService {
         return userStorage.retrieveAllUsers();
     }
 }
+*/

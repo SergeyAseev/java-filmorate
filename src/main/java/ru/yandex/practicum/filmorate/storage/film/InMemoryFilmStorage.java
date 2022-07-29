@@ -1,7 +1,9 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -49,12 +51,6 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void removeAllFilms() {
-        films.clear();
-        log.info("Все фильмы удалены");
-    }
-
-    @Override
     public Optional<Film> retrieveFilmById(long filmId) {
         return Optional.ofNullable(films.get(filmId));
     }
@@ -64,9 +60,19 @@ public class InMemoryFilmStorage implements FilmStorage {
         return new ArrayList<>(films.values());
     }
 
-    @Override
+/*    @Override
     public Map<Long, Film> retrieveFilms() {
         return films;
+    }*/
+
+    @Override
+    public void addLike(long filmId, long userId) {
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @Override
+    public void removeLike(long filmId, long userId) {
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
     }
 
     /**

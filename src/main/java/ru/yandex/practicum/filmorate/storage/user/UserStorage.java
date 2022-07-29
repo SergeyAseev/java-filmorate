@@ -30,7 +30,7 @@ public interface UserStorage {
     /**
      * Удаляем всех пользователей
      */
-    void removeAllUsers();
+    //void removeAllUsers();
 
     /**
      * Получаем пользователя по ID
@@ -46,4 +46,12 @@ public interface UserStorage {
     List<User> retrieveAllUsers();
 
     Map<Long, User> retrieveUsers();
+
+    void addFriends(long userId, long friendId);
+
+    List<User> getFriends(long userId);
+
+    List<User> getCommonFriends(long userId, long friendId);
+
+    void removeFromFriends(long userId, long friendId);
 }
