@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LikesLinks {
+public class Likes {
 
     private long filmId;
     private long userId;

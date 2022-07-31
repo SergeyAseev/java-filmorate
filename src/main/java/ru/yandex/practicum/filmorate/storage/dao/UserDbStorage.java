@@ -45,7 +45,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User updateUser(User user) {
-        String sql = "UPDATE users set id = ?, login = ?, email = ?, name = ?, birthday = ?;";
+        String sql = "UPDATE users set id = ?, login = ?, email = ?, name = ?, birthday = ?;"; //TODO переделать на merge into?
         jdbcTemplate.update(sql,
                 user.getId(),
                 user.getLogin(),
@@ -105,7 +105,15 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> getCommonFriends(long userId, long friendId) {
-        return null;
+        String sql = "SELECT fr.to_user, u.login, u.email, u.name, u.birthday, COUNT (to_user) " +
+                "FROM friends fr " +
+                "LEFT JOIN users u ON fr.to_user = u.id " +
+                "WHERE from_user = ? OR from_user = ? " +
+                "GROUP BY to_user " +
+                "HAVING COUNT (to_user) > 1;";
+        List<User> users = jdbcTemplate.query(sql, this::makeUser, userId, friendId);
+        return List.copyOf(users);
+
     }
 
     @Override
@@ -122,47 +130,10 @@ public class UserDbStorage implements UserStorage {
         });
     }
 
-
-
-/*
-    @Override
-    public Friendship getFriendship(int userId, int friendId) {
-        SqlRowSet friendRows = queryFriendship(userId, friendId);
-        if (friendRows.next()) {
-            return new Friendship(
-                    friendRows.getInt("from_user_id"),
-                    friendRows.getInt("to_user_id"),
-                    friendRows.getBoolean("is_bilateral"));
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    String.format("У пользователя с id %d нет в друзьях пользователя с id %d", userId, friendId));
-        }
-    }*/
-
-/*    @Override
-    public List<User> getCommonFriends(int userId, int friendId) {
-        String sql = "SELECT fr.to_user_id, u.login, u.email, u.name, u.birthday, COUNT (to_user_id) " +
-                "FROM friendship AS fr " +
-                "LEFT OUTER JOIN users AS u ON fr.to_user_id = u.id " +
-                "WHERE from_user_id = ? OR from_user_id = ? " +
-                "GROUP BY to_user_id " +
-                "HAVING COUNT (to_user_id) > 1;";
-        Collection<User> users = jdbcTemplate.query(sql, this::makeUser, userId, friendId);
-        return List.copyOf(users);
-    }*/
-
-/*    private SqlRowSet queryFriendship(int userId, int friendId) {
-        return jdbcTemplate.queryForRowSet(
-                "SELECT * " +
-                        "FROM friends " +
-                        "WHERE from_user_id = ? AND to_user_id = ?;",
-                userId, friendId);
-    }*/
-
     private User makeUser(ResultSet rs, int rowNum) {
         try {
             return new User(
-                    rs.getLong("id"),
+                    rs.getLong("to_user"),
                     rs.getString("login"),
                     rs.getString("email"),
                     rs.getString("name"),

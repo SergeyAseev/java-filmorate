@@ -19,7 +19,7 @@ public class MpaRatingDbStorage implements MpaRatingDao{
     }
     @Override
     public List<Mpa> retrieveAllMpaRatings() {
-        String sql = "SELECT * FROM mpa_rating;";
+        String sql = "SELECT * FROM mpa;";
         return jdbcTemplate.query(sql, (rs, rowNum) -> new Mpa(
                 rs.getInt("id"),
                 rs.getString("name"))
@@ -42,12 +42,13 @@ public class MpaRatingDbStorage implements MpaRatingDao{
     @Override
     public Mpa getFilmMpa (long id){
         SqlRowSet mpaRows = jdbcTemplate.queryForRowSet(
-                "SELECT f.mpa_rating_id, mr.name " +
-                        "FROM films AS f " +
-                        "LEFT JOIN mpa mr ON f.mpa_rating_id = mr.id " +
+                "SELECT f.mpa_id, mr.name " +
+                        "FROM films f " +
+                        "LEFT JOIN mpa mr ON f.mpa_id = mr.id " +
                         "WHERE f.id=?;", id);
         if (mpaRows.next()) {
-            Mpa mpaRating = new Mpa(mpaRows.getInt("id"),
+            Mpa mpaRating = new Mpa(
+                    mpaRows.getInt("mpa_id"),
                     mpaRows.getString("name"));
             return mpaRating;
         } else {

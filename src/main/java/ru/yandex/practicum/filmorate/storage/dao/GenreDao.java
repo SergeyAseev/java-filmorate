@@ -1,9 +1,11 @@
 package ru.yandex.practicum.filmorate.storage.dao;
 
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeSet;
 
 public interface GenreDao {
@@ -12,5 +14,7 @@ public interface GenreDao {
 
     Optional<Genre> retrieveGenreById(int id);
 
-    TreeSet<Genre> getFilmGenres(long id);
+    List<Genre> getFilmGenres(long id);
+
+    void fillingGenres(Film film);
 }

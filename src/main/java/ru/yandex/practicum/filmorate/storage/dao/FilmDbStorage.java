@@ -4,18 +4,15 @@ package ru.yandex.practicum.filmorate.storage.dao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,20 +22,20 @@ import java.util.Optional;
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private final LikesLinksDao likesLinksDao;
+    private final LikesDao likesDao;
     private final MpaRatingDao mpaRatingDao;
     private final GenreDao genreDao;
     @Override
     public Film addFilm(Film film) {
         Map<String, Object> keys = new SimpleJdbcInsert(this.jdbcTemplate)
                 .withTableName("films")
-                .usingColumns("name", "description", "release_date", "duration", "mpa_rating_id")
+                .usingColumns("name", "description", "release_date", "duration", "mpa_id")
                 .usingGeneratedKeyColumns("id")
                 .executeAndReturnKeyHolder(Map.of("name", film.getName(),
                         "description", film.getDescription(),
                         "release_date", Date.valueOf(film.getReleaseDate()),
                         "duration", film.getDuration(),
-                        "mpa_rating_id", film.getMpa().getId()
+                        "mpa_id", film.getMpa().getId()
                 ))
                 .getKeys();
         film.setId((Long) keys.get("id"));
@@ -47,7 +44,9 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
-        String sql = "UPDATE films set id = ?, name = ?, description = ?, release_date = ?, duration = ?, mpa_rating_id = ?;";
+        //String sql = "UPDATE films set id = ?, name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ?;";
+
+        String sql = "MERGE INTO films (id, name, description, release_date, duration, mpa_id) KEY (id) VALUES (?, ?, ?, ?, ?, ?);";
         jdbcTemplate.update(sql,
                 film.getId(),
                 film.getName(),
@@ -82,7 +81,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void addLike(long filmId, long userId) {
-        String sql = "INSERT INTO likes film_id = ? user_id = ?;";
+        String sql = "INSERT INTO LIKES values (?, ?);";
         jdbcTemplate.update(sql, filmId, userId);
     }
 
@@ -102,7 +101,7 @@ public class FilmDbStorage implements FilmStorage {
                     rs.getInt("duration"));
             film.setMpa(mpaRatingDao.getFilmMpa(film.getId()));
             film.setGenres(genreDao.getFilmGenres(film.getId()));
-            film.setLikes(likesLinksDao.getFilmLikes(film.getId()));
+            film.setLikes(likesDao.getFilmLikes(film.getId()));
             //film.setRate(film.getLikes().size());
             return film;
         } catch (SQLException e) {

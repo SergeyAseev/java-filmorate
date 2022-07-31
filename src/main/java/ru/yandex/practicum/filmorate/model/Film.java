@@ -5,9 +5,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 @Getter
 @Setter
@@ -19,7 +17,7 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     private int duration;
-    private TreeSet<Genre> genres;
+    private List<Genre> genres = new ArrayList<>();
     private Mpa mpa;
     private Set<Long> likes = new HashSet<>(); //храним ID пользователей, которые поставили лайки
 

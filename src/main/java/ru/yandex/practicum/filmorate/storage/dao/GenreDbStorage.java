@@ -4,13 +4,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.TreeSet;
+import java.util.*;
 
 @Component
 public class GenreDbStorage implements GenreDao{
@@ -43,17 +42,34 @@ public class GenreDbStorage implements GenreDao{
     }
 
     @Override
-    public TreeSet<Genre> getFilmGenres(long id) {
+    public List<Genre> getFilmGenres(long id) {
         String sql = "SELECT fg.genre_id, g.name " +
-                "FROM film_genre AS fg " +
-                "LEFT JOIN genres AS g ON fg.genre_id = g.genre_id " +
+                "FROM FILM_GENRE_LINKS fg " +
+                "LEFT JOIN genre g ON fg.genre_id = g.id " +
                 "WHERE fg.film_id=?;";
         List<Genre> genres = jdbcTemplate.query(sql, (rs, rowNum) ->
-                new Genre(rs.getInt("id"), rs.getString("name")), id);
+                new Genre(
+                        rs.getInt("genre_id"),
+                        rs.getString("name")),
+                id);
         if (!genres.isEmpty()) {
-            return new TreeSet<>(genres);
+            return new ArrayList<>(genres);
         } else {
-            return null;
+            return new ArrayList<>();
         }
     }
+
+    @Override
+    public void fillingGenres(Film film) {
+        String genreDeleteSql = "DELETE FROM film_genre_links WHERE film_id = ?";
+        jdbcTemplate.update(genreDeleteSql, film.getId());
+        if (film.getGenres() != null && !film.getGenres().isEmpty()) {
+            for (Genre genre : film.getGenres()) {
+                String sql = "MERGE INTO film_genre_links (film_id, genre_id) KEY (film_id, genre_id) values (?, ?);";
+                jdbcTemplate.update(sql, film.getId(), genre.getId());
+            }
+        }
+
+    }
 }
+

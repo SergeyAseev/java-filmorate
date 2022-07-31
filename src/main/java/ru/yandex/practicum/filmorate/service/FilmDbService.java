@@ -44,6 +44,7 @@ public class FilmDbService implements FilmService{
     public Film addFilm(Film film) {
         validate(film);
         filmStorage.addFilm(film);
+        genreDao.fillingGenres(film);
         log.info("Добавлен фильм id = {}", film.getId());
         return film;
     }
@@ -51,7 +52,9 @@ public class FilmDbService implements FilmService{
     @Override
     public Film updateFilm(Film film) {
         retrieveFilmById(film.getId());
-        return filmStorage.updateFilm(film);
+        genreDao.fillingGenres(film);
+        filmStorage.updateFilm(film);
+        return retrieveFilmById(film.getId());
     }
 
     @Override
@@ -98,7 +101,7 @@ public class FilmDbService implements FilmService{
 
     @Override
     public void addLike(long filmId, long userId) {
-/*        if (filmStorage.retrieveFilms().containsKey(filmId)) {
+        if (filmStorage.retrieveFilmById(filmId).isPresent()) {
             if (!retrieveFilmById(filmId).getLikes().contains(userId)) {
                 filmStorage.addLike(filmId, userId);
                 log.info("Пользователь с ID {} поставил лайк фильму с ID {}", userId, filmId);
@@ -108,13 +111,13 @@ public class FilmDbService implements FilmService{
             }
         } else {
             throw new NotFoundException(String.format("Нет фильма с ID %s", filmId));
-        }*/
+        }
     }
 
     @Override
     public void removeLike(long filmId, long userId) {
-/*        if (filmStorage.retrieveFilms().containsKey(filmId)) {
-            if (!retrieveFilmById(filmId).getLikes().contains(userId)) {
+        if (filmStorage.retrieveFilmById(filmId).isPresent()) {
+            if (retrieveFilmById(filmId).getLikes().contains(userId)) {
                 filmStorage.removeLike(filmId, userId);
                 log.info("Пользователь с ID {} удалил лайк у фильм с ID {}", userId, filmId);
             } else {
@@ -123,7 +126,7 @@ public class FilmDbService implements FilmService{
             }
         } else {
             throw new NotFoundException(String.format("Нет фильма с ID %s", filmId));
-        }*/
+        }
     }
 
     @Override

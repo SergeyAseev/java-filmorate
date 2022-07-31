@@ -41,6 +41,7 @@ public class UserDbService implements UserService{
 
     @Override
     public void addFriend(long userId, long friendId) {
+        retrieveUserById(friendId);
         userStorage.addFriends(userId, friendId);
     }
 
@@ -77,7 +78,7 @@ public class UserDbService implements UserService{
 
     @Override
     public List<User> retrieveCommonFriends(long userId, long friendId) {
-        return null;
+        return userStorage.getCommonFriends(userId, friendId);
     }
 
     protected void validate(User user) {

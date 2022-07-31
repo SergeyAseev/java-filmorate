@@ -14,9 +14,9 @@
 * description - описание
 * release_date - дата выхода
 * duration - длительность фильма
-* mpa_rating_id - внешний ключ на таблицу mpa_rating
+* mpa_id - внешний ключ на таблицу mpa
 
-**mpa_rating** - сущность **рейтинги фильмов**
+**mpa** - сущность **рейтинги фильмов**
 * id - ID, первичный ключ
 * name - название рейтинга
 
@@ -35,7 +35,7 @@
 * name - имя пользователя
 * birthday - дата рождения
 
-**likes_links** - промежуточная сущность для связи многие ко многим
+**likes** - промежуточная сущность для связи многие ко многим
 * film_id - внешний ключ, ссылка на таблицу фильмов
 * user_id - внешний ключ, ссылка на таблицу пользователей
 
@@ -59,7 +59,7 @@
       f.duration,
       count (ll.user_id) as likesCount
     FROM film f
-      LEFT JOIN likes_links ll 
+      LEFT JOIN likes ll 
       ON f.id = ll.film_id
     GROUP BY f.name, f.description, f.release_date, f.duration
     ORDER BY COUNT likesCount DESC
