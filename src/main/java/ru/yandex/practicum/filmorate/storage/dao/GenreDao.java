@@ -5,16 +5,32 @@ import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
 
 public interface GenreDao {
 
+    /**
+     * Получаем жанры из БД
+     * @return список жанров
+     */
     List<Genre> retrieveAllGenres();
 
-    Optional<Genre> retrieveGenreById(int id);
+    /**
+     *
+     * @param genreId идентификатор жанра
+     * @return экземпляр сущности Genre
+     */
+    Optional<Genre> retrieveGenreById(int genreId);
 
-    List<Genre> getFilmGenres(long id);
+    /**
+     * Получаем жанры фильма
+     * @param filmId идентификатор фильма
+     * @return список жанров фильма
+     */
+    List<Genre> getFilmGenres(long filmId);
 
-    void fillingGenres(Film film);
+    /**
+     * Заполяем промежуточную таблицу-связи фильма и жанра
+     * @param film экземпляр фильма
+     */
+    void fillInGenres(Film film);
 }

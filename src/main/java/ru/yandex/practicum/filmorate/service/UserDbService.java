@@ -18,8 +18,6 @@ public class UserDbService implements UserService{
 
     private final UserStorage userStorage;
 
-    private final Map<Long, User> users = new LinkedHashMap<Long, User>();
-
     @Autowired
     public UserDbService(@Qualifier("UserDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
@@ -29,13 +27,14 @@ public class UserDbService implements UserService{
     public User addUser(User user) {
         validate(user);
         userStorage.createUser(user);
-        log.info("Добавлен пользователь id = {}", user.getId());
+        log.info("Добавлен пользователь с ID = {}", user.getId());
         return user;
     }
 
     @Override
     public User updateUser(User user) {
         retrieveUserById(user.getId());
+        log.info("Обновлен пользователь с ID = {}", user.getId());
         return userStorage.updateUser(user);
     }
 
@@ -43,22 +42,21 @@ public class UserDbService implements UserService{
     public void addFriend(long userId, long friendId) {
         retrieveUserById(friendId);
         userStorage.addFriends(userId, friendId);
+        log.info("Добавлен друг с ID = {} пользователю с ID = {}", friendId, userId);
     }
 
     @Override
     public void removeFriend(long userId, long friendId) {
         userStorage.removeFromFriends(userId, friendId);
+        log.info("Удален друг с ID = {} у пользователя с ID = {}", friendId, userId);
     }
 
     @Override
     public void removeUserById(long userId) {
         userStorage.removeUserById(userId);
+        log.info("Удален пользователь с ID = {}", userId);
     }
 
-/*    @Override
-    public void removeAllUsers() {
-
-    }*/
 
     @Override
     public User retrieveUserById(long userId) {
@@ -68,16 +66,19 @@ public class UserDbService implements UserService{
 
     @Override
     public List<User> retrieveAllUsers() {
+        log.info("Возвращаем всех пользователей");
         return userStorage.retrieveAllUsers();
     }
 
     @Override
     public List<User> retrieveFriends(long userId) {
+        log.info("Возвращаем друзей пользователя с ID = {}", userId);
         return userStorage.getFriends(userId);
     }
 
     @Override
     public List<User> retrieveCommonFriends(long userId, long friendId) {
+        log.info("Возвращаем общих друзей пользователей с ID = {} и с ID = {}", userId, friendId);
         return userStorage.getCommonFriends(userId, friendId);
     }
 

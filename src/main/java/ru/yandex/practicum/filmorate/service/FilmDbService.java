@@ -44,7 +44,7 @@ public class FilmDbService implements FilmService{
     public Film addFilm(Film film) {
         validate(film);
         filmStorage.addFilm(film);
-        genreDao.fillingGenres(film);
+        genreDao.fillInGenres(film);
         log.info("Добавлен фильм id = {}", film.getId());
         return film;
     }
@@ -52,14 +52,16 @@ public class FilmDbService implements FilmService{
     @Override
     public Film updateFilm(Film film) {
         retrieveFilmById(film.getId());
-        genreDao.fillingGenres(film);
+        genreDao.fillInGenres(film);
         filmStorage.updateFilm(film);
+        log.info("Обновлен фильм id = {}", film.getId());
         return retrieveFilmById(film.getId());
     }
 
     @Override
     public void removeFilmById(long filmId) {
         filmStorage.removeFilmById(filmId);
+        log.info("Удален фильм id = {}", filmId);
     }
 
     @Override
@@ -70,31 +72,32 @@ public class FilmDbService implements FilmService{
 
     @Override
     public List<Film> retrieveAllFilms() {
+        log.info("Возвращаем все фильмы");
         return filmStorage.retrieveAllFilms();
     }
 
     @Override
     public List<Mpa> retrieveAllMpaRatings() {
-        log.info("Вернули все рейтинги");
+        log.info("Возвращаем все рейтинги");
         return mpaRatingDao.retrieveAllMpaRatings();
     }
 
     @Override
     public Mpa retrieveMpaRatingById(int ratingId) {
-        log.info("Вернули рейтинг с ID = {}", ratingId);
+        log.info("Возвращаем рейтинг с ID = {}", ratingId);
         return mpaRatingDao.retrieveMpaRatingById(ratingId).orElseThrow(() ->
                 new NotFoundException(String.format("Рейтинг с id %d не найден", ratingId)));
     }
 
     @Override
     public List<Genre> retrieveAllGenres() {
-        log.info("Вернули все жанры");
+        log.info("Возвращаем все жанры");
         return genreDao.retrieveAllGenres();
     }
 
     @Override
     public Genre retrieveGenreById(int genreId) {
-        log.info("Запрашиваем жанр ID = {}", genreId);
+        log.info("Возвращаем жанр с ID = {}", genreId);
         return genreDao.retrieveGenreById(genreId).orElseThrow(() ->
                 new NotFoundException(String.format("Жанр с id %d не найден", genreId)));
     }

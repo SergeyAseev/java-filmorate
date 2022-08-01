@@ -1,13 +1,10 @@
 package ru.yandex.practicum.filmorate.storage.dao;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.Friends;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -45,7 +42,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User updateUser(User user) {
-        String sql = "UPDATE users set id = ?, login = ?, email = ?, name = ?, birthday = ?;"; //TODO переделать на merge into?
+        String sql = "UPDATE users set id = ?, login = ?, email = ?, name = ?, birthday = ?;";
         jdbcTemplate.update(sql,
                 user.getId(),
                 user.getLogin(),
@@ -68,8 +65,8 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Optional<User> retrieveUserById(long id) {
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE id = ?;", id);
+    public Optional<User> retrieveUserById(long userId) {
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE id = ?;", userId);
         if (userRows.next()) {
             return Optional.of(new User(
                     userRows.getLong("id"),
@@ -78,13 +75,8 @@ public class UserDbStorage implements UserStorage {
                     userRows.getString("name"),
                     LocalDate.parse(userRows.getString("birthday"))));
         } else {
-            throw new NotFoundException(String.format("Пользователь с ID %d не найден", id));
+            throw new NotFoundException(String.format("Пользователь с ID %d не найден", userId));
         }
-    }
-
-    @Override
-    public Map<Long, User> retrieveUsers() {
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
     }
 
     @Override
@@ -105,14 +97,13 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> getCommonFriends(long userId, long friendId) {
-        String sql = "SELECT fr.to_user, u.login, u.email, u.name, u.birthday, COUNT (to_user) " +
+        String sql = "SELECT fr.to_user, u.login, u.email, u.name, u.birthday, COUNT(to_user) " +
                 "FROM friends fr " +
                 "LEFT JOIN users u ON fr.to_user = u.id " +
                 "WHERE from_user = ? OR from_user = ? " +
                 "GROUP BY to_user " +
-                "HAVING COUNT (to_user) > 1;";
-        List<User> users = jdbcTemplate.query(sql, this::makeUser, userId, friendId);
-        return List.copyOf(users);
+                "HAVING COUNT(to_user) > 1;";
+        return jdbcTemplate.query(sql, this::makeUser, userId, friendId);
 
     }
 
@@ -123,10 +114,10 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void removeUserById(long id) {
-        String userDeleteSql = "DELETE FROM USERS WHERE ID=?";
+    public void removeUserById(long userId) {
+        String userDeleteSql = "DELETE FROM users WHERE ID=?";
         jdbcTemplate.update(userDeleteSql, ps -> {
-            ps.setLong(1, id);
+            ps.setLong(1, userId);
         });
     }
 

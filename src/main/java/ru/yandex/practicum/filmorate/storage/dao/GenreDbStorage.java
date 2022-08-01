@@ -6,19 +6,20 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.User;
 
-import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Component
-public class GenreDbStorage implements GenreDao{
+public class GenreDbStorage implements GenreDao {
 
     private final JdbcTemplate jdbcTemplate;
 
     public GenreDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
     @Override
     public List<Genre> retrieveAllGenres() {
         String sql = "SELECT * FROM genre;";
@@ -29,29 +30,29 @@ public class GenreDbStorage implements GenreDao{
     }
 
     @Override
-    public Optional<Genre> retrieveGenreById(int id) {
-        SqlRowSet genreRows = jdbcTemplate.queryForRowSet("SELECT * FROM genre WHERE id=?;", id);
+    public Optional<Genre> retrieveGenreById(int genreId) {
+        SqlRowSet genreRows = jdbcTemplate.queryForRowSet("SELECT * FROM genre WHERE id=?;", genreId);
         if (genreRows.next()) {
             return Optional.of(new Genre(
                     genreRows.getInt("id"),
                     genreRows.getString("name")
             ));
         } else {
-            throw new NotFoundException(String.format("Жанр с ID %d не найден", id));
+            throw new NotFoundException(String.format("Жанр с ID %d не найден", genreId));
         }
     }
 
     @Override
-    public List<Genre> getFilmGenres(long id) {
+    public List<Genre> getFilmGenres(long filmId) {
         String sql = "SELECT fg.genre_id, g.name " +
-                "FROM FILM_GENRE_LINKS fg " +
+                "FROM film_genre_links fg " +
                 "LEFT JOIN genre g ON fg.genre_id = g.id " +
                 "WHERE fg.film_id=?;";
         List<Genre> genres = jdbcTemplate.query(sql, (rs, rowNum) ->
-                new Genre(
-                        rs.getInt("genre_id"),
-                        rs.getString("name")),
-                id);
+                        new Genre(
+                                rs.getInt("genre_id"),
+                                rs.getString("name")),
+                filmId);
         if (!genres.isEmpty()) {
             return new ArrayList<>(genres);
         } else {
@@ -60,7 +61,7 @@ public class GenreDbStorage implements GenreDao{
     }
 
     @Override
-    public void fillingGenres(Film film) {
+    public void fillInGenres(Film film) {
         String genreDeleteSql = "DELETE FROM film_genre_links WHERE film_id = ?";
         jdbcTemplate.update(genreDeleteSql, film.getId());
         if (film.getGenres() != null && !film.getGenres().isEmpty()) {

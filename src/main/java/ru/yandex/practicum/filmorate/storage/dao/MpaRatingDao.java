@@ -7,9 +7,23 @@ import java.util.Optional;
 
 public interface MpaRatingDao {
 
+    /**
+     * Получаем мпа-рейтинги из бд
+     * @return все мпа-рейтинги
+     */
     List<Mpa> retrieveAllMpaRatings();
 
-    Optional<Mpa> retrieveMpaRatingById(int id);
+    /**
+     * Получаем мпа-рейтинг
+     * @param mpaId иденификатор рейтинга
+     * @return экзепляр сущности Мпа
+     */
+    Optional<Mpa> retrieveMpaRatingById(int mpaId);
 
-    Mpa getFilmMpa(long id);
+    /**
+     * Получаем мпа-рейтинг фильма
+     * @param filmId идентификатор фильма
+     * @return экзепляр сущности Мпа
+     */
+    Mpa getFilmMpa(long filmId);
 }

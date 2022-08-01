@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.dao;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -25,6 +24,7 @@ public class FilmDbStorage implements FilmStorage {
     private final LikesDao likesDao;
     private final MpaRatingDao mpaRatingDao;
     private final GenreDao genreDao;
+
     @Override
     public Film addFilm(Film film) {
         Map<String, Object> keys = new SimpleJdbcInsert(this.jdbcTemplate)
@@ -44,8 +44,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
-        //String sql = "UPDATE films set id = ?, name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ?;";
-
         String sql = "MERGE INTO films (id, name, description, release_date, duration, mpa_id) KEY (id) VALUES (?, ?, ?, ?, ?, ?);";
         jdbcTemplate.update(sql,
                 film.getId(),
@@ -64,7 +62,6 @@ public class FilmDbStorage implements FilmStorage {
             ps.setLong(1, filmId);
         });
     }
-
 
     @Override
     public Optional<Film> retrieveFilmById(long filmId) {
@@ -91,6 +88,12 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.update(sql, filmId, userId);
     }
 
+    /**
+     * Десериализация фильма
+     * @param rs
+     * @param rowNum
+     * @return экземляр фильма
+     */
     private Film makeFilm(ResultSet rs, int rowNum) {
         try {
             Film film = new Film(
@@ -102,7 +105,6 @@ public class FilmDbStorage implements FilmStorage {
             film.setMpa(mpaRatingDao.getFilmMpa(film.getId()));
             film.setGenres(genreDao.getFilmGenres(film.getId()));
             film.setLikes(likesDao.getFilmLikes(film.getId()));
-            //film.setRate(film.getLikes().size());
             return film;
         } catch (SQLException e) {
             throw new RuntimeException(e);

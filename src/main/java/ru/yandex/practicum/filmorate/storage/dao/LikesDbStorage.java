@@ -23,8 +23,8 @@ public class LikesDbStorage implements LikesDao {
 
     @Override
     public Set<Long> getFilmLikes(long filmId) {
-        String sql = "SELECT USER_ID FROM likes WHERE FILM_ID = ?";
-        return Set.copyOf(jdbcTemplate.query(sql,(rs,rowNum)->rs.getLong("USER_ID"),filmId));
+        String sql = "SELECT user_id FROM likes WHERE film_id = ?";
+        return Set.copyOf(jdbcTemplate.query(sql, (rs, rowNum) -> rs.getLong("USER_ID"), filmId));
 
     }
 
