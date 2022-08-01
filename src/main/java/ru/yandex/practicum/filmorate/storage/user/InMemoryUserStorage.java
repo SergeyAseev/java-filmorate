@@ -1,5 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.user;
-
+/*
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -18,9 +18,9 @@ public class InMemoryUserStorage implements UserStorage {
     protected long userId = 0;
     private final Map<Long, User> users = new LinkedHashMap<Long, User>();
 
-    /**
+    *//**
      * увеличивает уникальный идентификатор пользователя
-     */
+     *//*
     protected long generateId() {
         return ++userId;
     }
@@ -51,11 +51,11 @@ public class InMemoryUserStorage implements UserStorage {
         log.info("Пользователь c ID {} успешно удален", userId);
     }
 
-/*    @Override
+*//*    @Override
     public void removeAllUsers() {
         users.clear();
         log.info("Все пользователи удалены");
-    }*/
+    }*//*
 
     @Override
     public Optional<User> retrieveUserById(long userId) {
@@ -92,10 +92,10 @@ public class InMemoryUserStorage implements UserStorage {
         throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    /**
+    *//**
      * Проверка создаваемого пользователя на валидность
      * @param user экземпляр текущего пользователя
-     */
+     *//*
     protected void validate(User user) {
         if (user.getBirthday().isAfter(LocalDate.now())) {
             throw new ValidationException("Дата рождения пользователя %s не может быть позже текущей даты");
@@ -110,4 +110,4 @@ public class InMemoryUserStorage implements UserStorage {
             user.setName(user.getLogin());
         }
     }
-}
+}*/
