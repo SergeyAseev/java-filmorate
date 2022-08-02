@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.util.List;
 
@@ -23,7 +21,7 @@ public interface FilmService {
      * @param count число фильмов, которые надо вернуть
      * @return отсортированный список фильмов
      */
-    List<Film> returnPopularFilms(long count);
+    List<Film> returnPopularFilms(int count);
 
     /**
      * Создаем новый фильм
@@ -55,28 +53,4 @@ public interface FilmService {
      * @return список значений, который хранит все фильмы
      */
     List<Film> retrieveAllFilms();
-
-    /**
-     * Получаем все рейтинги
-     * @return список значений, который хранит все рейтинги
-     */
-    List<Mpa> retrieveAllMpaRatings();
-
-    /**
-     * Получаем рейтинг по ID
-     * @return экземпляр рейтинга
-     */
-    Mpa retrieveMpaRatingById(int id);
-
-    /**
-     * Получаем все жанры
-     * @return список значений, который хранит все жанры
-     */
-    List<Genre> retrieveAllGenres();
-
-    /**
-     * Получаем жанр по ID
-     * @return экземпляр жанра
-     */
-    Genre retrieveGenreById(int id);
 }

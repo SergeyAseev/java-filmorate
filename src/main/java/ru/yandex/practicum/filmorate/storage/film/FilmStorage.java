@@ -41,6 +41,8 @@ public interface FilmStorage {
      */
     List<Film> retrieveAllFilms();
 
+    List<Film> returnTopFilms(int count);
+
     void addLike(long filmId, long userId);
 
     void removeLike(long filmId, long userId);

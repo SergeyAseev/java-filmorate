@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service("FilmDbService")
-public class FilmDbService implements FilmService{
+public class FilmDbService implements FilmService, MpaService, GenreService{
 
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
@@ -133,11 +133,8 @@ public class FilmDbService implements FilmService{
     }
 
     @Override
-    public List<Film> returnPopularFilms(long count) {
-        return filmStorage.retrieveAllFilms().stream()
-                .sorted(Comparator.comparing(e-> e.getLikes().size(), Comparator.reverseOrder()))
-                .limit(count)
-                .collect(Collectors.toList());
+    public List<Film> returnPopularFilms(int count) {
+        return filmStorage.returnTopFilms(count);
     }
 
     public void validate(Film film) {
