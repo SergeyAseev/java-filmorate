@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
 
@@ -33,15 +34,34 @@ public interface UserService {
      */
     List<User> retrieveCommonFriends(long userId, long friendId);
 
+    /**
+     * Создаем нового пользователя
+     * @param user экземпляр текущего пользователя в виде Json
+     * @return экземпляр созданного пользователя
+     */
     User addUser(User user);
 
+    /**
+     * Обновляем данные уже существующего пользователя
+     * @param user экземпляр текущего пользователя
+     * @return экземпляр обновленного пользователя
+     */
     User updateUser(User user);
 
+    /**
+     * Удаляем пользователя по ID
+     */
     void removeUserById(long userId);
 
-    void removeAllUsers();
-
+    /**
+     * Получаем пользователя по ID
+     * @return экземпляр пользователя
+     */
     User retrieveUserById(long userId);
 
+    /**
+     * Получаем всех пользователей
+     * @return список значений, который хранит всех пользователей
+     */
     List<User> retrieveAllUsers();
 }
