@@ -53,4 +53,11 @@ public interface FilmService {
      * @return список значений, который хранит все фильмы
      */
     List<Film> retrieveAllFilms();
+
+    /**
+     * Возвращаем отсортированный список фильмов по рейтингу
+     * @param count число фильмов, которые надо вернуть
+     * @return отсортированный список фильмов
+     */
+    List<Film> returnPopularFilmsByGenreAndYear(int count, int genreId, int year);
 }

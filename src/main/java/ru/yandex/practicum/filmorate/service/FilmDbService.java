@@ -151,4 +151,9 @@ public class FilmDbService implements FilmService, MpaService, GenreService{
             throw new ValidationException("Продолжительность фильма должна быть числом положительным");
         }
     }
+
+    @Override
+    public List<Film> returnPopularFilmsByGenreAndYear(int count, int genreId, int year) {
+        return filmStorage.returnTopFilmsByGenreAndYear(count, genreId, year);
+    }
 }

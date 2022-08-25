@@ -127,4 +127,17 @@ public class FilmDbStorage implements FilmStorage {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public List<Film> returnTopFilmsByGenreAndYear(int count, int genreId, int year) {
+        String sql = "SELECT f.id, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, count(distinct l.USER_ID) FROM films f " +
+                "left join MPA m ON f.MPA_ID = m.ID " +
+                "left join FILM_GENRE_LINKS fgl ON f.id = fgl.FILM_ID " +
+                "left join GENRE g on fgl.GENRE_ID = g.ID " +
+                "left join likes l ON f.id = l.FILM_ID " +
+                "group by f.id, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION " +
+                "order by count(distinct l.USER_ID) desc " +
+                "limit ?; ";
+        return jdbcTemplate.query(sql, this::makeFilm, count);
+    }
 }

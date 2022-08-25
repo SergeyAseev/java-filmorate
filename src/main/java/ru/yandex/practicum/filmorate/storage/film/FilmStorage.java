@@ -47,4 +47,5 @@ public interface FilmStorage {
 
     void removeLike(long filmId, long userId);
 
+    List<Film> returnTopFilmsByGenreAndYear(int count, int genreId, int year);
 }
