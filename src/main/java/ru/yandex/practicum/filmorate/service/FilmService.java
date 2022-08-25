@@ -17,13 +17,6 @@ public interface FilmService {
     void removeLike(long filmId, long userId);
 
     /**
-     * Возвращаем отсортированный список фильмов по рейтингу
-     * @param count число фильмов, которые надо вернуть
-     * @return отсортированный список фильмов
-     */
-    List<Film> returnPopularFilms(int count);
-
-    /**
      * Создаем новый фильм
      * @param film экземпляр текущего фильма в виде Json
      * @return экземпляр созданного фильма
@@ -57,7 +50,9 @@ public interface FilmService {
     /**
      * Возвращаем отсортированный список фильмов по рейтингу
      * @param count число фильмов, которые надо вернуть
+     * @param genreId жанр фильма, который ищем
+     * @param year год, за который ищем фильм
      * @return отсортированный список фильмов
      */
-    List<Film> returnPopularFilmsByGenreAndYear(int count, int genreId, int year);
+    List<Film> returnPopularFilms(int count, int genreId, int year);
 }
