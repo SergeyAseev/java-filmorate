@@ -94,6 +94,48 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> returnTopFilmsByYear(int count, int year) {
+        String sql = "SELECT f.id, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, count(distinct l.USER_ID) FROM films f " +
+                "left join MPA m ON f.MPA_ID = m.ID " +
+                "left join FILM_GENRE_LINKS fgl ON f.id = fgl.FILM_ID " +
+                "left join GENRE g on fgl.GENRE_ID = g.ID " +
+                "left join likes l ON f.id = l.FILM_ID " +
+                "where extract(year from f.RELEASE_DATE) = ? " +
+                "group by f.id, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION " +
+                "order by count(distinct l.USER_ID) desc " +
+                "limit ?; ";
+        return jdbcTemplate.query(sql, this::makeFilm, year, count);
+    }
+
+    @Override
+    public List<Film> returnTopFilmsByGenre(int count, int genreId) {
+        String sql = "SELECT f.id, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, count(distinct l.USER_ID) FROM films f " +
+                "left join MPA m ON f.MPA_ID = m.ID " +
+                "left join FILM_GENRE_LINKS fgl ON f.id = fgl.FILM_ID " +
+                "left join GENRE g on fgl.GENRE_ID = g.ID " +
+                "left join likes l ON f.id = l.FILM_ID " +
+                "where g.id = ? " +
+                "group by f.id, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION " +
+                "order by count(distinct l.USER_ID) desc " +
+                "limit ?; ";
+        return jdbcTemplate.query(sql, this::makeFilm, genreId, count);
+    }
+
+    @Override
+    public List<Film> returnTopFilmsByGenreAndYear(int count, int genreId, int year) {
+        String sql = "SELECT f.id, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, count(distinct l.USER_ID) FROM films f " +
+                "left join MPA m ON f.MPA_ID = m.ID " +
+                "left join FILM_GENRE_LINKS fgl ON f.id = fgl.FILM_ID " +
+                "left join GENRE g on fgl.GENRE_ID = g.ID " +
+                "left join likes l ON f.id = l.FILM_ID " +
+                "where extract(year from f.RELEASE_DATE) = ? and g.id = ? " +
+                "group by f.id, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION " +
+                "order by count(distinct l.USER_ID) desc " +
+                "limit ?; ";
+        return jdbcTemplate.query(sql, this::makeFilm, year, genreId, count);
+    }
+
+    @Override
     public void addLike(long filmId, long userId) {
         String sql = "INSERT INTO LIKES values (?, ?);";
         jdbcTemplate.update(sql, filmId, userId);
@@ -126,18 +168,5 @@ public class FilmDbStorage implements FilmStorage {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public List<Film> returnTopFilmsByGenreAndYear(int count, int genreId, int year) {
-        String sql = "SELECT f.id, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, count(distinct l.USER_ID) FROM films f " +
-                "left join MPA m ON f.MPA_ID = m.ID " +
-                "left join FILM_GENRE_LINKS fgl ON f.id = fgl.FILM_ID " +
-                "left join GENRE g on fgl.GENRE_ID = g.ID " +
-                "left join likes l ON f.id = l.FILM_ID " +
-                "group by f.id, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION " +
-                "order by count(distinct l.USER_ID) desc " +
-                "limit ?; ";
-        return jdbcTemplate.query(sql, this::makeFilm, count);
     }
 }
