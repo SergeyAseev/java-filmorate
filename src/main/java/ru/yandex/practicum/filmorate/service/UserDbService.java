@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -80,6 +81,11 @@ public class UserDbService implements UserService{
     public List<User> retrieveCommonFriends(long userId, long friendId) {
         log.info("Возвращаем общих друзей пользователей с ID = {} и с ID = {}", userId, friendId);
         return userStorage.getCommonFriends(userId, friendId);
+    }
+
+    @Override
+    public List<Feed> retrieveUsersFeed(long userId) {
+        return null;
     }
 
     protected void validate(User user) {

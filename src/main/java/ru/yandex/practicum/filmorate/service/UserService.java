@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
@@ -64,4 +65,6 @@ public interface UserService {
      * @return список значений, который хранит всех пользователей
      */
     List<User> retrieveAllUsers();
+
+    List<Feed> retrieveUsersFeed(long userId);
 }
