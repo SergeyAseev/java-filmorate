@@ -47,4 +47,12 @@ public interface FilmStorage {
 
     void removeLike(long filmId, long userId);
 
+    /**
+     * Список фильмов режиссера отсортированных по количеству лайков или году выпуска
+     * @param directorId
+     * @param sortBy
+     * @return
+     */
+    List<Film> findSortFilmsByDirector(Integer directorId, String sortBy);
+
 }

@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.service.DirectorService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -24,7 +25,7 @@ public class DirectorController {
         return directorService.findAll();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}")
     public Director findDirectorById (@PathVariable Integer id) {
         log.info("Получен запрос к эндпоинту GET, http://localhost:8080/directors/{id}");
         return directorService.findDirectorById(id);
