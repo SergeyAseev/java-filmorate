@@ -84,29 +84,29 @@ public class ReviewDbStorage implements ReviewDao {
     @Override
     public void setLike(Long id, Long userId, Boolean isPositive) {
         final String sqlQuery = "UPDATE REVIEWS SET IS_POSITIVE = ?, USER_ID = ?, USEFUL = ? WHERE ID = ?";
-        jdbcTemplate.update(sqlQuery, isPositive, userId, +1, id);
-        System.out.println(findById(id));
+        final Review review = findById(id);
+        jdbcTemplate.update(sqlQuery, isPositive, userId, review.getUseful() + 1, id);
     }
 
     @Override
     public void setDislike(Long id, Long userId, Boolean isPositive) {
         final String sqlQuery = "UPDATE REVIEWS SET IS_POSITIVE = ?, USER_ID = ?, USEFUL = ? WHERE ID = ?";
-        jdbcTemplate.update(sqlQuery, isPositive, userId, -1, id);
-        System.out.println(findById(id));
+        final Review review = findById(id);
+        jdbcTemplate.update(sqlQuery, isPositive, userId, review.getUseful() - 1, id);
     }
 
     @Override
     public void deleteLike(Long id, Long userId) {
         final String sqlQuery = "UPDATE REVIEWS SET IS_POSITIVE = ?, USER_ID = ?, USEFUL = ? WHERE ID = ?";
-        jdbcTemplate.update(sqlQuery, null, userId, -1, id);
-        System.out.println(findById(id));
+        final Review review = findById(id);
+        jdbcTemplate.update(sqlQuery, null, userId, review.getUseful() - 1, id);
     }
 
     @Override
     public void deleteDislike(Long id, Long userId) {
         final String sqlQuery = "UPDATE REVIEWS SET IS_POSITIVE = ?, USER_ID = ?, USEFUL = ? WHERE ID = ?";
-        jdbcTemplate.update(sqlQuery, null, userId, +1, id);
-        System.out.println(findById(id));
+        final Review review = findById(id);
+        jdbcTemplate.update(sqlQuery, null, userId, review.getUseful() + 1, id);
     }
 
     private Review makeReview(ResultSet resultSet, int rowNum) throws SQLException {
