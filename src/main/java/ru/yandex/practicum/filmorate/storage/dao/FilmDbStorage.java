@@ -72,11 +72,11 @@ public class FilmDbStorage implements FilmStorage {
                 .orElseThrow(() -> new NotFoundException(String.format("Фильм с ID %d не найден", filmId))));
     }
 
+    // Упростил и исправил запрос ниже, иначе выдавался некорректный объект
+    // после сборки Фильма через makeFilm() с жанрами
     @Override
     public List<Film> retrieveAllFilms() {
-        String sql = "SELECT * FROM films f left join MPA m ON f.MPA_ID = m.ID " +
-                     "left join FILM_GENRE_LINKS fgl ON f.id = fgl.FILM_ID " +
-                     "left join GENRE g on fgl.GENRE_ID = g.ID";
+        String sql = "SELECT ID, NAME, DESCRIPTION, RELEASE_DATE, DURATION FROM FILMS";
         return jdbcTemplate.query(sql, this::makeFilm);
     }
 

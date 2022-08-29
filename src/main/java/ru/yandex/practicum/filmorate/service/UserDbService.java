@@ -70,16 +70,28 @@ public class UserDbService implements UserService{
         return userStorage.retrieveAllUsers();
     }
 
+    // Добавил проверки на наличие пользователей в двух методах ниже
     @Override
     public List<User> retrieveFriends(long userId) {
-        log.info("Возвращаем друзей пользователя с ID = {}", userId);
-        return userStorage.getFriends(userId);
+        if (userStorage.retrieveUserById(userId).isPresent()) {
+            log.info("Возвращаем друзей пользователя с ID = {}", userId);
+            return userStorage.getFriends(userId);
+        } else {
+            log.warn("Нет пользователя с ID = {}", userId);
+            throw new NotFoundException("Не найден пользователь с ID " + userId);
+        }
     }
 
     @Override
     public List<User> retrieveCommonFriends(long userId, long friendId) {
-        log.info("Возвращаем общих друзей пользователей с ID = {} и с ID = {}", userId, friendId);
-        return userStorage.getCommonFriends(userId, friendId);
+        if (userStorage.retrieveUserById(userId).isPresent()
+                && userStorage.retrieveUserById(friendId).isPresent()) {
+            log.info("Возвращаем общих друзей пользователей с ID = {} и с ID = {}", userId, friendId);
+            return userStorage.getCommonFriends(userId, friendId);
+        } else {
+            log.warn("Нет пользователя с указанным ID");
+            throw new NotFoundException("Не найден пользователь с указанным ID");
+        }
     }
 
     protected void validate(User user) {
