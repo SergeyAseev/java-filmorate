@@ -22,30 +22,28 @@ public class DirectorService {
     }
 
     public Director findDirectorById (Integer id) {
-        if (id == null || id <= 0) {
-            throw new NotFoundException("некоректный id");
-        }
+        validate(id);
         return directorDao.findDirectorById(id);
     }
 
     public Director createDirector (Director director) {
-        if (director.getId() == null || director.getId() <= 0) {
-            throw new NotFoundException("некоректный id при создании директора");
-        }
+        validate(director.getId());
         return directorDao.createDirector(director);
     }
 
     public Director updateDirector (Director director) {
-        if (director.getId() == null || director.getId() <= 0) {
-            throw new NotFoundException("некоректный id при создании директора");
-        }
+        validate(director.getId());
         return directorDao.updateDirector(director);
     }
 
     public void removeDirector (Integer id) {
+        validate(id);
+        directorDao.removeDirector(id);
+    }
+
+    private void validate(Integer id) {
         if (id == null || id <= 0) {
             throw new NotFoundException("некоректный id");
         }
-        directorDao.removeDirector(id);
     }
 }

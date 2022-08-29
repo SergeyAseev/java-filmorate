@@ -49,9 +49,9 @@ public interface FilmStorage {
 
     /**
      * Список фильмов режиссера отсортированных по количеству лайков или году выпуска
-     * @param directorId
-     * @param sortBy
-     * @return
+     * @param directorId id режиссера
+     * @param sortBy сортировка может быть либо likes, либо year
+     * @return отсортированный список фильмов
      */
     List<Film> findSortFilmsByDirector(Integer directorId, String sortBy);
 

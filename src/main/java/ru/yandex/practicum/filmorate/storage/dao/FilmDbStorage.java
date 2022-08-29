@@ -191,7 +191,7 @@ public class FilmDbStorage implements FilmStorage {
                         rs.getInt("duration"));
                 film.setMpa(mpaRatingDao.getFilmMpa(film.getId()));
                 film.setGenres(genreDao.getFilmGenres(film.getId()));
-                film.setDirectors(directorDao.getDirectorByFilmID(film.getId()));
+                film.setDirectors(directorDao.getFilmDirectors(film.getId()));
                 film.setLikes(likesDao.getFilmLikes(film.getId()));
                 return film;
             } catch (SQLException e) {

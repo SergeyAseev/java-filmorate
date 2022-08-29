@@ -10,8 +10,8 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class Director {
 
-    Integer id;
+    private Integer id;
     @NonNull
     @NotBlank
-    String name;
+    private String name;
 }

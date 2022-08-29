@@ -7,43 +7,42 @@ import java.util.List;
 public interface DirectorDao {
 
     /**
-     * Получение списка всех режиссеров
-     * @return
+     * Получаем режиссеров из БД
+     * @return список всех режиссеров
      */
     List<Director> findAll ();
 
     /**
      * Получение режиссера по id
-     * @param id
-     * @return
+     * @param id идентификатор режиссера
+     * @return экземпляр сущности Director
      */
     Director findDirectorById (Integer id);
 
     /**
      * Создание режиссера
-     * @param director
-     * @return
+     * @param director экземпляр текущего режиссера
+     * @return экземпляр созданного режиссера
      */
     Director createDirector (Director director);
 
     /**
-     * Изменение режиссера
-     * @param director
-     * @return
+     * Обновляем данные уже существующего режиссера
+     * @param director экземпляр текущего режиссера
+     * @return экземпляр обновленного режиссера
      */
     Director updateDirector (Director director);
 
     /**
      * Удаление режиссера
-     * @param id
-     * @return
+     * @param id идентификатор режиссера
      */
     void removeDirector (Integer id);
 
     /**
-     * Получить режисеров для фильма по id
-     * @param id
-     * @return
+     * Получить список режисеров для фильма по id
+     * @param id идентификатор фильма
+     * @return список режиссеров
      */
-    List<Director> getDirectorByFilmID(Long id);
+    List<Director> getFilmDirectors(Long id);
 }

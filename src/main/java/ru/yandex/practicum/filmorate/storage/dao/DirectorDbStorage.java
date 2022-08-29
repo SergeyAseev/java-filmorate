@@ -80,7 +80,7 @@ public class DirectorDbStorage implements DirectorDao {
     }
 
     @Override
-    public List<Director> getDirectorByFilmID(Long id) {
+    public List<Director> getFilmDirectors(Long id) {
         final String sqlQuery = "select DIRECTOR_ID from FILMS_DIRECTORS where FILM_ID = ?";
         List<Integer> integers = jdbcTemplate.queryForList(sqlQuery,Integer.class,id);
         List<Director> directors = new ArrayList<>();
@@ -90,7 +90,6 @@ public class DirectorDbStorage implements DirectorDao {
                 final Director director = jdbcTemplate.queryForObject(sqlGenre, this::makeDirector, integer);
                 directors.add(director);
             }
- //           return directors;
         }
         return directors;
     }
