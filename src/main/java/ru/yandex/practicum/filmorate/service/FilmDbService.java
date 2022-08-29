@@ -135,8 +135,24 @@ public class FilmDbService implements FilmService, MpaService, GenreService{
     }
 
     @Override
-    public List<Film> returnPopularFilms(int count) {
-        return filmStorage.returnTopFilms(count);
+    public List<Film> returnPopularFilms(int count, int genreId, int year) {
+        if (genreId == -1) {
+            if (year == -1) {
+                log.info("Был запрошен рейтинг популярных фильмов");
+                return filmStorage.returnTopFilms(count);
+            } else {
+                log.info("Был запрошен рейтинг популярных фильмов по году {}", year);
+                return filmStorage.returnTopFilmsByYear(count, year);
+            }
+        } else {
+            if (year == -1) {
+                log.info("Был запрошен рейтинг популярных фильмов по жанру {}", genreId);
+                return filmStorage.returnTopFilmsByGenre(count, genreId);
+            } else {
+                log.info("Был запрошен рейтинг популярных фильмов по жанру {} и году {}", genreId, year);
+                return filmStorage.returnTopFilmsByGenreAndYear(count, genreId, year);
+            }
+        }
     }
 
     @Override
