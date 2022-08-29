@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -16,6 +17,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -133,8 +135,35 @@ public class FilmDbService implements FilmService, MpaService, GenreService{
     }
 
     @Override
-    public List<Film> returnPopularFilms(int count) {
-        return filmStorage.returnTopFilms(count);
+    public List<Film> returnPopularFilms(int count, int genreId, int year) {
+        if (genreId == -1) {
+            if (year == -1) {
+                log.info("Был запрошен рейтинг популярных фильмов");
+                return filmStorage.returnTopFilms(count);
+            } else {
+                log.info("Был запрошен рейтинг популярных фильмов по году {}", year);
+                return filmStorage.returnTopFilmsByYear(count, year);
+            }
+        } else {
+            if (year == -1) {
+                log.info("Был запрошен рейтинг популярных фильмов по жанру {}", genreId);
+                return filmStorage.returnTopFilmsByGenre(count, genreId);
+            } else {
+                log.info("Был запрошен рейтинг популярных фильмов по жанру {} и году {}", genreId, year);
+                return filmStorage.returnTopFilmsByGenreAndYear(count, genreId, year);
+            }
+        }
+    }
+
+    @Override
+    public List<Film> findSortFilmsByDirector(Integer directorId, String sortBy) {
+        if (directorId == 0 || directorId == null) {
+            throw new NotFoundException("wrong director id");
+        }
+        if (sortBy == null || sortBy.isBlank()) {
+            throw new NotFoundException("sorting not specified");
+        }
+        return filmStorage.findSortFilmsByDirector(directorId,sortBy);
     }
 
     public void validate(Film film) {
