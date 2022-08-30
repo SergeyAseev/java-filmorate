@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -12,9 +13,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component("UserDbStorage")
 public class UserDbStorage implements UserStorage {
@@ -119,6 +118,28 @@ public class UserDbStorage implements UserStorage {
         jdbcTemplate.update(userDeleteSql, ps -> {
             ps.setLong(1, userId);
         });
+    }
+
+    /*
+    @Override
+    public Film getRecommendations(long filmId) {
+        SqlRowSet filmRows = jdbcTemplate.queryForRowSet("SELECT * FROM films WHERE id = ?", filmId);
+        if (filmRows.next()) {
+            return new Film(
+                    filmRows.getLong("id"),
+                    filmRows.getString("name"),
+                    filmRows.getString("description"));
+        } else {
+            throw new NotFoundException(String.format("Фильм с ID %d не найден", filmId));
+        }
+    }
+
+     */
+
+    @Override
+    public List<Long> getLikesByUser (long id) {
+        List<Long> userRows = jdbcTemplate.queryForList("SELECT film_id from likes where user_id=?", Long.class, id);
+        return userRows;
     }
 
     private User makeUser(ResultSet rs, int rowNum) {

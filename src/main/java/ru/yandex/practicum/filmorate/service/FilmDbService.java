@@ -137,6 +137,11 @@ public class FilmDbService implements FilmService, MpaService, GenreService{
         return filmStorage.returnTopFilms(count);
     }
 
+    @Override
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        return filmStorage.getCommonFilms(userId, friendId);
+    }
+
     public void validate(Film film) {
         if (film.getName().isEmpty()) {
             throw new ValidationException("Название не может быть пустым");
