@@ -227,13 +227,13 @@ public class FilmDbStorage implements FilmStorage {
         if (option.contains("director") && option.contains("title") && (option.size() == 2)) {
             for (Film film : allFilms) {
                 for (Director director : film.getDirectors()) {
-                    if (director.getName().toLowerCase().contains(query.toLowerCase()) && !neededFilms.contains(film)) {
+                    if (checkNameForSubstring(director.getName(), query) && !neededFilms.contains(film)) {
                         neededFilms.add(film);
                     }
                 }
             }
             for (Film film : allFilms) {
-                if (film.getName().toLowerCase().contains(query.toLowerCase()) && !neededFilms.contains(film)) {
+                if (checkNameForSubstring(film.getName(), query) && !neededFilms.contains(film)) {
                     neededFilms.add(film);
                 }
             }
@@ -241,7 +241,7 @@ public class FilmDbStorage implements FilmStorage {
         } else if (option.contains("director") && (option.size() == 1)) {
             for (Film film : allFilms) {
                 for (Director director : film.getDirectors()) {
-                    if (director.getName().toLowerCase().contains(query.toLowerCase()) && !neededFilms.contains(film)) {
+                    if (checkNameForSubstring(director.getName(), query) && !neededFilms.contains(film)) {
                         neededFilms.add(film);
                     }
                 }
@@ -249,7 +249,7 @@ public class FilmDbStorage implements FilmStorage {
             return neededFilms;
         } else if (option.contains("title") && (option.size() == 1)) {
             for (Film film : allFilms) {
-                if (film.getName().toLowerCase().contains(query.toLowerCase())) {
+                if (checkNameForSubstring(film.getName(), query)) {
                     neededFilms.add(film);
                 }
             }
@@ -281,5 +281,9 @@ public class FilmDbStorage implements FilmStorage {
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
+    }
+
+    private boolean checkNameForSubstring(String name, String substring) {
+        return name.toLowerCase().contains(substring.toLowerCase());
     }
 }
