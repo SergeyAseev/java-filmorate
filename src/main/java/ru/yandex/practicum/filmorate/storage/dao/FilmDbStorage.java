@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -217,6 +218,45 @@ public class FilmDbStorage implements FilmStorage {
     public void deleteDirectorByFilm(Film film) {
         final String sqlQuery = "DELETE FROM FILMS_DIRECTORS WHERE FILM_ID = ?";
         jdbcTemplate.update(sqlQuery, film.getId());
+    }
+
+    @Override
+    public List<Film> searchFilmsByDirectorOrName(String query, List<String> option) {
+        List<Film> allFilms = retrieveAllFilms();
+        List<Film> neededFilms = new ArrayList<>();
+        if (option.contains("director") && option.contains("title") && (option.size() == 2)) {
+            for (Film film : allFilms) {
+                for (Director director : film.getDirectors()) {
+                    if (director.getName().toLowerCase().contains(query.toLowerCase()) && !neededFilms.contains(film)) {
+                        neededFilms.add(film);
+                    }
+                }
+            }
+            for (Film film : allFilms) {
+                if (film.getName().toLowerCase().contains(query.toLowerCase()) && !neededFilms.contains(film)) {
+                    neededFilms.add(film);
+                }
+            }
+            return neededFilms;
+        } else if (option.contains("director") && (option.size() == 1)) {
+            for (Film film : allFilms) {
+                for (Director director : film.getDirectors()) {
+                    if (director.getName().toLowerCase().contains(query.toLowerCase()) && !neededFilms.contains(film)) {
+                        neededFilms.add(film);
+                    }
+                }
+            }
+            return neededFilms;
+        } else if (option.contains("title") && (option.size() == 1)) {
+            for (Film film : allFilms) {
+                if (film.getName().toLowerCase().contains(query.toLowerCase())) {
+                    neededFilms.add(film);
+                }
+            }
+            return neededFilms;
+        } else {
+            throw new ValidationException("Некорректный запрос: можно искать только по названию и/или режиссеру.");
+        }
     }
 
     /**

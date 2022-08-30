@@ -63,4 +63,6 @@ public interface FilmService {
      * @return отсортированный список фильмов
      */
     List<Film> returnPopularFilms(int count, int genreId, int year);
+
+    List<Film> searchFilmsByDirectorOrName(String query, List<String> option);
 }

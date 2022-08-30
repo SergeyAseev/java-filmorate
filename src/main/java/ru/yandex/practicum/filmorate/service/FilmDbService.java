@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -164,6 +165,16 @@ public class FilmDbService implements FilmService, MpaService, GenreService{
             throw new NotFoundException("sorting not specified");
         }
         return filmStorage.findSortFilmsByDirector(directorId,sortBy);
+    }
+
+    @Override
+    public List<Film> searchFilmsByDirectorOrName(String query, List<String> option) {
+        log.info("Передан запрос на поиск фильма по названию/режиссеру");
+        try {
+            return filmStorage.searchFilmsByDirectorOrName(query, option);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Не найден фильм по данному запросу");
+        }
     }
 
     public void validate(Film film) {
