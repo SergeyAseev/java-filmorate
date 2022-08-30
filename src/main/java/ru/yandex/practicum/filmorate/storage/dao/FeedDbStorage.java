@@ -17,7 +17,7 @@ public class FeedDbStorage  implements FeedDao{
 
     @Override
     public void addFeed(long userId, EventEnum eventEnum, OperationEnum operationEnum, long entityId) {
-        String sql = "INSERT INTO FEED (user_id, event_type, operation_type, entity_id) values (?, ?, ?, ?);"; //TODO
+        String sql = "INSERT INTO FEED (user_id, event_type, operation_type, entity_id) values (?, ?, ?, ?);";
         jdbcTemplate.update(sql, userId, eventEnum.toString(), operationEnum.toString(), entityId);
     }
 

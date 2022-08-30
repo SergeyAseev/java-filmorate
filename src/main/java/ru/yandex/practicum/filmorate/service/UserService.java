@@ -66,5 +66,10 @@ public interface UserService {
      */
     List<User> retrieveAllUsers();
 
+    /**
+     * Возвращаем ленту событий пользователя
+     * @param userId ID пользователя
+     * @return список событий пользователя
+     */
     List<Feed> retrieveUsersFeed(long userId);
 }
