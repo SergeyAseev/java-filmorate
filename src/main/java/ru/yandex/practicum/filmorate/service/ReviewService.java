@@ -5,9 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.storage.dao.FeedDao;
 import ru.yandex.practicum.filmorate.storage.dao.ReviewDao;
 
 @Service
@@ -17,6 +16,7 @@ public class ReviewService {
     private final UserService userService;
     private final FilmService filmService;
 
+    private final FeedDao feedDao;
 
     public Review findById(Long id) {
         try {
@@ -40,14 +40,19 @@ public class ReviewService {
                     , film.getId())
             );
         }
-        return reviewDao.save(review);
+        Review newReview = reviewDao.save(review);
+        feedDao.addFeed(newReview.getUserId(), EventEnum.REVIEW, OperationEnum.ADD, newReview.getReviewId());
+        return newReview;
     }
 
     public Review update(Review review) {
-        return reviewDao.update(review);
+        Review updatedReview = reviewDao.update(review);
+        feedDao.addFeed(updatedReview.getUserId(), EventEnum.REVIEW, OperationEnum.UPDATE, updatedReview.getReviewId());
+        return updatedReview;
     }
 
     public void deleteById(Long id) {
+        feedDao.addFeed(findById(id).getReviewId(), EventEnum.REVIEW, OperationEnum.REMOVE, id);
         reviewDao.deleteById(id);
     }
 

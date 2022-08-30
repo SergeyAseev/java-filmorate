@@ -6,7 +6,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.EventEnum;
+import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.OperationEnum;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.dao.FeedDao;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
@@ -18,9 +22,13 @@ public class UserDbService implements UserService{
 
     private final UserStorage userStorage;
 
+    private final FeedDao feedDao;
+
     @Autowired
-    public UserDbService(@Qualifier("UserDbStorage") UserStorage userStorage) {
+    public UserDbService(@Qualifier("UserDbStorage") UserStorage userStorage,
+                         FeedDao feedDao) {
         this.userStorage = userStorage;
+        this.feedDao = feedDao;
     }
 
     @Override
@@ -42,12 +50,14 @@ public class UserDbService implements UserService{
     public void addFriend(long userId, long friendId) {
         retrieveUserById(friendId);
         userStorage.addFriends(userId, friendId);
+        feedDao.addFeed(userId, EventEnum.FRIEND, OperationEnum.ADD, friendId);
         log.info("Добавлен друг с ID = {} пользователю с ID = {}", friendId, userId);
     }
 
     @Override
     public void removeFriend(long userId, long friendId) {
         userStorage.removeFromFriends(userId, friendId);
+        feedDao.addFeed(userId, EventEnum.FRIEND, OperationEnum.REMOVE, friendId);
         log.info("Удален друг с ID = {} у пользователя с ID = {}", friendId, userId);
     }
 
@@ -92,6 +102,13 @@ public class UserDbService implements UserService{
             log.warn("Нет пользователя с указанным ID");
             throw new NotFoundException("Не найден пользователь с указанным ID");
         }
+    }
+
+    @Override
+    public List<Feed> retrieveUsersFeed(long userId) {
+        retrieveUserById(userId);
+        log.info("Возвращаем события для пользователя с ID = {}", userId);
+        return feedDao.getFeed(userId);
     }
 
     protected void validate(User user) {
