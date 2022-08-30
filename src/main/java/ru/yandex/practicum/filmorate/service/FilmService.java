@@ -7,6 +7,14 @@ import java.util.List;
 public interface FilmService {
 
     /**
+     * Список фильмов режиссера отсортированных по количеству лайков или году выпуска
+     * @param directorId id режиссера
+     * @param sortBy сортировка может быть либо likes, либо year
+     * @return отсортированный список фильмов
+     */
+    List<Film> findSortFilmsByDirector(Integer directorId, String sortBy);
+
+    /**
      * Проставляем лайк фильму от пользователя
      */
     void addLike(long filmId, long userId);
