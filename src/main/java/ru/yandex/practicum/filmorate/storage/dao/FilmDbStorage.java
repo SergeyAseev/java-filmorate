@@ -222,38 +222,22 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> searchFilmsByDirectorOrName(String query, List<String> option) {
-        List<Film> allFilms = retrieveAllFilms();
-        List<Film> neededFilms = new ArrayList<>();
+        query = query.toUpperCase();
+        String sql = "SELECT f.id, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION FROM films f " +
+                "left join MPA m ON f.MPA_ID = m.ID " +
+                "left join FILM_GENRE_LINKS fgl ON f.id = fgl.FILM_ID " +
+                "left join GENRE g on fgl.GENRE_ID = g.ID " +
+                "left join FILMS_DIRECTORS fd ON f.id = fd.FILM_ID " +
+                "left join DIRECTORS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID ";
         if (option.contains("director") && option.contains("title") && (option.size() == 2)) {
-            for (Film film : allFilms) {
-                for (Director director : film.getDirectors()) {
-                    if (checkNameForSubstring(director.getName(), query) && !neededFilms.contains(film)) {
-                        neededFilms.add(film);
-                    }
-                }
-            }
-            for (Film film : allFilms) {
-                if (checkNameForSubstring(film.getName(), query) && !neededFilms.contains(film)) {
-                    neededFilms.add(film);
-                }
-            }
-            return neededFilms;
+            sql += "WHERE UPPER(f.NAME) REGEXP ? OR UPPER(d.DIRECTOR_NAME) REGEXP ? ORDER BY f.id DESC";
+            return jdbcTemplate.query(sql, this::makeFilm, query, query);
         } else if (option.contains("director") && (option.size() == 1)) {
-            for (Film film : allFilms) {
-                for (Director director : film.getDirectors()) {
-                    if (checkNameForSubstring(director.getName(), query) && !neededFilms.contains(film)) {
-                        neededFilms.add(film);
-                    }
-                }
-            }
-            return neededFilms;
+            sql += "WHERE UPPER(d.DIRECTOR_NAME) REGEXP ?";
+            return jdbcTemplate.query(sql, this::makeFilm, query);
         } else if (option.contains("title") && (option.size() == 1)) {
-            for (Film film : allFilms) {
-                if (checkNameForSubstring(film.getName(), query)) {
-                    neededFilms.add(film);
-                }
-            }
-            return neededFilms;
+            sql += "WHERE UPPER(f.NAME) REGEXP ?";
+            return jdbcTemplate.query(sql, this::makeFilm, query);
         } else {
             throw new ValidationException("Некорректный запрос: можно искать только по названию и/или режиссеру.");
         }
@@ -281,9 +265,5 @@ public class FilmDbStorage implements FilmStorage {
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-    }
-
-    private boolean checkNameForSubstring(String name, String substring) {
-        return name.toLowerCase().contains(substring.toLowerCase());
     }
 }
