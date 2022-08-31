@@ -17,7 +17,7 @@ public class FilmController {
     private final FilmService filmService;
 
     @Autowired
-    public FilmController (@Qualifier("FilmDbService")FilmService filmService) {
+    public FilmController(@Qualifier("FilmDbService") FilmService filmService) {
         this.filmService = filmService;
     }
 
@@ -64,13 +64,19 @@ public class FilmController {
                                       @RequestParam(defaultValue = "-1") int year) {
         return filmService.returnPopularFilms(count, genreId, year);
     }
+
     @GetMapping("/director/{directorId}")
     public List<Film> findSortFilmsByDirector(@PathVariable Integer directorId,
-                                                         @RequestParam String sortBy) {
+                                              @RequestParam String sortBy) {
         return filmService.findSortFilmsByDirector(directorId, sortBy);
     }
     @GetMapping(value = "/common")
     public List<Film> getCommonFilms (@RequestParam long userId, @RequestParam long friendId) {
         return filmService.getCommonFilms(userId, friendId);
+
+    @GetMapping(value = "/search")
+    public List<Film> searchFilmsByDirectorOrName(@RequestParam String query,
+                                                  @RequestParam(name = "by") List<String> option) {
+        return filmService.searchFilmsByDirectorOrName(query, option);
     }
 }
