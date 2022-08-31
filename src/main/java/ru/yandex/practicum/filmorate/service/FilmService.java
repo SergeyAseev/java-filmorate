@@ -63,5 +63,10 @@ public interface FilmService {
      * @return отсортированный список фильмов
      */
     List<Film> returnPopularFilms(int count, int genreId, int year);
-    public List<Film> getCommonFilms(long userId, long friendId);
+
+    /**
+     * Получаем фильмы, которые лайкнули указанные пользователи
+     * @return список общих фильмов
+     */
+     List<Film> getCommonFilms(long userId, long friendId);
 }

@@ -21,20 +21,17 @@ import java.util.List;
 public class FilmDbService implements FilmService, MpaService, GenreService{
 
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
     private final GenreDao genreDao;
     private final MpaRatingDao mpaRatingDao;
 
     private final FeedDao feedDao;
     @Autowired
     public FilmDbService(@Qualifier("FilmDbStorage") FilmStorage filmStorage,
-                         @Qualifier("UserDbStorage") UserStorage userStorage,
                          GenreDao genreDao,
                          MpaRatingDao mpaRatingDao,
                          FeedDao feedDao
                          ) {
         this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
         this.genreDao = genreDao;
         this.mpaRatingDao = mpaRatingDao;
         this.feedDao = feedDao;

@@ -28,9 +28,7 @@ public class UserDbService implements UserService{
     private final FeedDao feedDao;
 
     @Autowired
-    public UserDbService(@Qualifier("UserDbStorage") UserStorage userStorage,
-                         FeedDao feedDao) {
-    public UserDbService(@Qualifier("UserDbStorage") UserStorage userStorage, FilmStorage filmStorage) {
+    public UserDbService(@Qualifier("UserDbStorage") UserStorage userStorage, FilmStorage filmStorage, FeedDao feedDao) {
         this.userStorage = userStorage;
         this.feedDao = feedDao;
         this.filmStorage = filmStorage;

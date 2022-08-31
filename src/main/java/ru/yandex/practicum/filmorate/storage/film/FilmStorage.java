@@ -84,6 +84,13 @@ public interface FilmStorage {
      */
     List<Film> findSortFilmsByDirector(Integer directorId, String sortBy);
 
+
+    /**
+     * Список фильмов который лайкнули оба пользователя
+     * @param userId id пользователя
+     * @param friendId id друга
+     * @return список общих фильмов
+     */
     public List<Film> getCommonFilms(long userId, long friendId);
 
 }

@@ -73,5 +73,4 @@ public interface UserService {
      * @return список событий пользователя
      */
     List<Feed> retrieveUsersFeed(long userId);
-    public List <Optional<Film>> getRecommendations(long id);
 }

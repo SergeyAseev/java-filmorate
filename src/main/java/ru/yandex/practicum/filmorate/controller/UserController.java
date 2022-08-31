@@ -72,8 +72,4 @@ public class UserController {
     public List<Feed> retrieveUsersFeed(@PathVariable long id) {
         return userService.retrieveUsersFeed(id);
     }
-    @GetMapping(value = "/{id}/recommendations")
-    public List<Optional<Film>> getRecommendations(@PathVariable long id) {
-        return userService.getRecommendations(id);
-    }
 }

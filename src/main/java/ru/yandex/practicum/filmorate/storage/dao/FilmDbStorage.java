@@ -119,6 +119,7 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sql, this::makeFilm, count);
     }
 
+    @Override
     public List<Film> getCommonFilms(long userId, long friendId) {
         String sql = "select f.* from films f where f.id = " +
                 "  (select l.FILM_ID from likes l " +
