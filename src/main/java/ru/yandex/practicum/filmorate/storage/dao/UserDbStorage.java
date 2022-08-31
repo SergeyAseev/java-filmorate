@@ -120,22 +120,6 @@ public class UserDbStorage implements UserStorage {
         });
     }
 
-    /*
-    @Override
-    public Film getRecommendations(long filmId) {
-        SqlRowSet filmRows = jdbcTemplate.queryForRowSet("SELECT * FROM films WHERE id = ?", filmId);
-        if (filmRows.next()) {
-            return new Film(
-                    filmRows.getLong("id"),
-                    filmRows.getString("name"),
-                    filmRows.getString("description"));
-        } else {
-            throw new NotFoundException(String.format("Фильм с ID %d не найден", filmId));
-        }
-    }
-
-     */
-
     @Override
     public List<Long> getLikesByUser (long id) {
         List<Long> userRows = jdbcTemplate.queryForList("SELECT film_id from likes where user_id=?", Long.class, id);

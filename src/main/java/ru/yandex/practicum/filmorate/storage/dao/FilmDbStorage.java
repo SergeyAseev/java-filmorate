@@ -93,13 +93,6 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sql, this::makeFilm, count);
     }
 
-    public List<Film> getCommonFilms(long userId, long friendId) {
-        String sql = "select f.* from films f where f.id = " +
-                "  (select l.FILM_ID from likes l " +
-                "where l.USER_ID= ?and  l.film_id = (select ll.FILM_ID from likes ll where ll.USER_ID=? ))";
-        return jdbcTemplate.query(sql, this::makeFilm, userId, friendId);
-    }
-
     @Override
     public void addLike(long filmId, long userId) {
         String sql = "INSERT INTO LIKES values (?, ?);";
