@@ -167,6 +167,7 @@ public class FilmDbService implements FilmService, MpaService, GenreService{
     @Override
     public List<Film> getCommonFilms(long userId, long friendId) {
         return filmStorage.getCommonFilms(userId, friendId);
+    }
 
     public List<Film> searchFilmsByDirectorOrName(String query, List<String> option) {
         log.info("Передан запрос на поиск фильма по названию/режиссеру");
