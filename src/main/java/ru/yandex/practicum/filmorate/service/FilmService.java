@@ -53,4 +53,5 @@ public interface FilmService {
      * @return список значений, который хранит все фильмы
      */
     List<Film> retrieveAllFilms();
+    public List<Film> getCommonFilms(long userId, long friendId);
 }
