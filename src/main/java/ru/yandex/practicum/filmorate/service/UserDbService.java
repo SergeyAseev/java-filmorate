@@ -6,10 +6,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.EventEnum;
 import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.OperationEnum;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.dao.FeedDao;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -21,14 +23,15 @@ import java.util.*;
 public class UserDbService implements UserService{
 
     private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
 
     private final FeedDao feedDao;
 
     @Autowired
-    public UserDbService(@Qualifier("UserDbStorage") UserStorage userStorage,
-                         FeedDao feedDao) {
+    public UserDbService(@Qualifier("UserDbStorage") UserStorage userStorage, FilmStorage filmStorage, FeedDao feedDao) {
         this.userStorage = userStorage;
         this.feedDao = feedDao;
+        this.filmStorage = filmStorage;
     }
 
     @Override

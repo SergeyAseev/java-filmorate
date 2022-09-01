@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.storage.dao.FeedDao;
 import ru.yandex.practicum.filmorate.storage.dao.GenreDao;
 import ru.yandex.practicum.filmorate.storage.dao.MpaRatingDao;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,20 +21,17 @@ import java.util.List;
 public class FilmDbService implements FilmService, MpaService, GenreService{
 
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
     private final GenreDao genreDao;
     private final MpaRatingDao mpaRatingDao;
 
     private final FeedDao feedDao;
     @Autowired
     public FilmDbService(@Qualifier("FilmDbStorage") FilmStorage filmStorage,
-                         @Qualifier("UserDbStorage") UserStorage userStorage,
                          GenreDao genreDao,
                          MpaRatingDao mpaRatingDao,
                          FeedDao feedDao
                          ) {
         this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
         this.genreDao = genreDao;
         this.mpaRatingDao = mpaRatingDao;
         this.feedDao = feedDao;
@@ -168,6 +164,10 @@ public class FilmDbService implements FilmService, MpaService, GenreService{
     }
 
     @Override
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        return filmStorage.getCommonFilms(userId, friendId);
+    }
+
     public List<Film> searchFilmsByDirectorOrName(String query, List<String> option) {
         log.info("Передан запрос на поиск фильма по названию/режиссеру");
         try {

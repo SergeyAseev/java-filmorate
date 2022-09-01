@@ -65,6 +65,12 @@ public interface FilmService {
     List<Film> returnPopularFilms(int count, int genreId, int year);
 
     /**
+     * Получаем фильмы, которые лайкнули указанные пользователи
+     * @return список общих фильмов
+     */
+     List<Film> getCommonFilms(long userId, long friendId);
+
+     /**
      * Получаем фильмы через поисковый запрос
      * @param query текст-содержание запроса
      * @param option поиск по имени режиссера или названию фильма как по отдельности, так и одновременно
