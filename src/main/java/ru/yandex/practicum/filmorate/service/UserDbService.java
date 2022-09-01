@@ -28,9 +28,7 @@ public class UserDbService implements UserService{
     private final FeedDao feedDao;
 
     @Autowired
-    public UserDbService(@Qualifier("UserDbStorage") UserStorage userStorage,
-                         FeedDao feedDao) {
-    public UserDbService(@Qualifier("UserDbStorage") UserStorage userStorage, FilmStorage filmStorage) {
+    public UserDbService(@Qualifier("UserDbStorage") UserStorage userStorage, FilmStorage filmStorage, FeedDao feedDao) {
         this.userStorage = userStorage;
         this.feedDao = feedDao;
         this.filmStorage = filmStorage;
@@ -117,46 +115,76 @@ public class UserDbService implements UserService{
     }
 
 
-    private Set<Long> getTargetFilms (long id) {
+    private List<Long> getTargetFilms (long id) {
         ArrayList<Long> usersIds = new ArrayList<>();
         List<User> allUsers = retrieveAllUsers();
-        for (int i = 0; i < allUsers.size(); i++) {
+        for (int i = 1; i < allUsers.size(); i++) {
             usersIds.add(allUsers.get(i).getId());
         }
         Map<Long, List<Long>> usersLikes = new HashMap<>();
-        Map<Long, Integer> intersectionLikes = new HashMap<>();
-        for (int i = 0; i < usersIds.size(); i++) {
-            List<Long> commonFilmsIds = new ArrayList<>();
-            commonFilmsIds = userStorage.getLikesByUser(usersIds.get(i));
+        Map<Long, Map<Long, Long>> intersectionLikes = new HashMap<>();
+        int sizeUsers = usersIds.size();
+        for (int i= 0; i < sizeUsers; i++) {
+            List<Long> commonFilmsIds = userStorage.getLikesByUser(usersIds.get(i));
             usersLikes.put(usersIds.get(i), commonFilmsIds);
-            List<Long> user = usersLikes.get(id);
-            List<Long> otherUser = new ArrayList<>();
-            otherUser = usersLikes.get(i);
-            if (otherUser != null) {
-                Set<Long> intersection = new HashSet<>(user);
-                if (intersection.size() != 0) {
-                    throw new NotFoundException("Пересечений не найдено");
-                }
-                if (otherUser != null) {
-                    intersection.retainAll(otherUser); // нашли пересечения
-                    intersectionLikes.put(usersIds.get(i), intersection.size());
+        }
+            List<Long> likesUser=userStorage.getLikesByUser(id);
+            if (likesUser.size()==0) {
+                return new ArrayList<>();
+            }
+            Set<Long> likesUserSet = new HashSet<>(likesUser);
+            long percent = 0 ;
+            long mostId = 0;
+            List<Long> targetFilms = new ArrayList<>();
+            for (int j = 0; j < sizeUsers; j++) {
+                Set<Long> bufferUserSet = likesUserSet;
+                //  System.out.println(j);
+                //   if (usersLikes.get(j) != null) {
+                Set<Long> likesFriendSet = new HashSet<>(userStorage.getLikesByUser(j)); // получили лайки пользователя
+                bufferUserSet.retainAll(likesFriendSet);
+                likesFriendSet.addAll(likesUserSet);
+                if ((likesFriendSet.size() != 0 )&&(likesUserSet != null)&&(j != id)) {
+                    if (bufferUserSet.size() / likesFriendSet.size()  > percent) {
+                        percent = bufferUserSet.size() / likesFriendSet.size();
+                            mostId = j;
+                   }
                 }
             }
-        }
-        List<Long> targetUserFilms = new ArrayList<>();
-        Set<Long> targetFilms = new HashSet<>();
-        if (intersectionLikes.size() != 0) {
-            intersectionLikes.values().stream().sorted();
-            targetUserFilms = userStorage.getLikesByUser(intersectionLikes.get(1));
-            if (targetUserFilms != null) {
-                List<Long> userFilms = userStorage.getLikesByUser(id);
-                Set<Long> targetFilms2 = new HashSet<>(targetUserFilms);
-                targetFilms = targetFilms2;
-                targetFilms.removeAll(userFilms);
-            }
-        }
-            return targetFilms;
+        return userStorage.getLikesByUser(mostId);
     }
+         //   }
+
+//        for (int i = 0; i < usersIds.size(); i++) {
+//            List<Long> commonFilmsIds = new ArrayList<>();
+//            commonFilmsIds = userStorage.getLikesByUser(usersIds.get(i));
+//            usersLikes.put(usersIds.get(i), commonFilmsIds);
+//            List<Long> user = usersLikes.get(id);
+//            List<Long> otherUser = new ArrayList<>();
+//            otherUser = usersLikes.get(i);
+//            if (otherUser != null) {
+//                Set<Long> intersection = new HashSet<>(user);
+//                if (intersection.size() != 0) {
+//                    throw new NotFoundException("Пересечений не найдено");
+//                }
+//                if (otherUser != null) {
+//                    intersection.retainAll(otherUser); // нашли пересечения
+//                    intersectionLikes.put(usersIds.get(i), intersection.size());
+//                }
+//            }
+//        }
+//        List<Long> targetUserFilms = new ArrayList<>();
+//        Set<Long> targetFilms = new HashSet<>();
+//        if (intersectionLikes.size() != 0) {
+//            intersectionLikes.values().stream().sorted();
+//            targetUserFilms = userStorage.getLikesByUser(intersectionLikes.get(1));
+//            if (targetUserFilms != null) {
+//                List<Long> userFilms = userStorage.getLikesByUser(id);
+//                Set<Long> targetFilms2 = new HashSet<>(targetUserFilms);
+//                targetFilms = targetFilms2;
+//                targetFilms.removeAll(userFilms);
+//            }
+//        }
+
         /*
         Comparator<Set<Long>> lengthComparator = new Comparator<Set<Long>>() {
             public int compare(Set<Long> a, Set<Long> b) {
@@ -238,7 +266,7 @@ public class UserDbService implements UserService{
 
     @Override
     public List<Optional<Film>> getRecommendations(long id) {
-        Set<Long> targetFilms = getTargetFilms(id);
+        List<Long> targetFilms = getTargetFilms(id);
         List<Optional<Film>> recommendations = new ArrayList<>();
         for (int i = 0; i < targetFilms.size(); i++) {
             for (long filmId : targetFilms) {
