@@ -47,4 +47,5 @@ public interface UserStorage {
     List<User> getCommonFriends(long userId, long friendId);
 
     void removeFromFriends(long userId, long friendId);
+    List<Film> getRecommendation(long userId);
 }

@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,9 +19,11 @@ import java.util.*;
 public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
+    private final FilmService filmService;
 
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
+    public UserDbStorage(JdbcTemplate jdbcTemplate, FilmService filmService) {
         this.jdbcTemplate = jdbcTemplate;
+        this.filmService = filmService;
     }
 
     @Override
@@ -114,10 +116,51 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void removeUserById(long userId) {
-        String userDeleteSql = "DELETE FROM users WHERE ID=?";
+        String userDeleteSql = "DELETE FROM users WHERE ID = ?";
         jdbcTemplate.update(userDeleteSql, ps -> {
             ps.setLong(1, userId);
         });
+    }
+
+    @Override
+    public List<Film> getRecommendation(long userId) {
+        final User user = retrieveUserById(userId) .orElseThrow(
+                () -> new NotFoundException(String.format("Не найден пользователь с ID %s", userId))
+        );
+
+        List<User> users = retrieveAllUsers();
+        Map<User, Set<Long>> likes = new LinkedHashMap<>();
+        String sqlInsertByUser = "SELECT film_id FROM likes WHERE user_id = " + user.getId();
+        Set<Long> idsFilmsByUser = new HashSet<>(jdbcTemplate.queryForList(sqlInsertByUser, Long.class));
+        likes.put(user, idsFilmsByUser);
+
+        for (User it : users) {
+            if (!it.equals(user)) {
+                String sqlInsertByAllUser = "SELECT film_id FROM likes WHERE user_id = " + it.getId();
+                idsFilmsByUser = new HashSet<>(jdbcTemplate.queryForList(sqlInsertByAllUser, Long.class));
+                likes.put(it, idsFilmsByUser);
+                sqlInsertByAllUser = null;
+            }
+        }
+
+        List<Film> films = new ArrayList<>();
+        Set<Long> idsFilmsRecommendation = null;
+        int count = 0;
+        for (Map.Entry<User, Set<Long>> pair : likes.entrySet()) {
+            if (pair.getKey().equals(user)) continue;
+            Set<Long> tmp = pair.getValue();
+            tmp.removeAll(likes.get(user));
+            if (count < tmp.size()) {
+                count += tmp.size();
+                idsFilmsRecommendation = tmp;
+            }
+        }
+        if (idsFilmsRecommendation != null) {
+            for (Long id : idsFilmsRecommendation) {
+                films.add(filmService.retrieveFilmById(id));
+            }
+        }
+        return films;
     }
 
     private User makeUser(ResultSet rs, int rowNum) {

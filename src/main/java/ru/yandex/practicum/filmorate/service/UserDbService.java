@@ -20,7 +20,7 @@ import java.util.*;
 
 @Slf4j
 @Service("UserDbService")
-public class UserDbService implements UserService{
+public class UserDbService implements UserService {
 
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
@@ -112,6 +112,13 @@ public class UserDbService implements UserService{
         retrieveUserById(userId);
         log.info("Возвращаем события для пользователя с ID = {}", userId);
         return feedDao.getFeed(userId);
+    }
+
+    @Override
+    public List<Film> getRecommendation(long userId) {
+        retrieveUserById(userId);
+        log.info("Возвращаем события для пользователя с ID = {}", userId);
+        return userStorage.getRecommendation(userId);
     }
 
     protected void validate(User user) {
