@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -11,7 +12,6 @@ import ru.yandex.practicum.filmorate.storage.dao.FeedDao;
 import ru.yandex.practicum.filmorate.storage.dao.GenreDao;
 import ru.yandex.practicum.filmorate.storage.dao.MpaRatingDao;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,20 +21,17 @@ import java.util.List;
 public class FilmDbService implements FilmService, MpaService, GenreService{
 
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
     private final GenreDao genreDao;
     private final MpaRatingDao mpaRatingDao;
 
     private final FeedDao feedDao;
     @Autowired
     public FilmDbService(@Qualifier("FilmDbStorage") FilmStorage filmStorage,
-                         @Qualifier("UserDbStorage") UserStorage userStorage,
                          GenreDao genreDao,
                          MpaRatingDao mpaRatingDao,
                          FeedDao feedDao
                          ) {
         this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
         this.genreDao = genreDao;
         this.mpaRatingDao = mpaRatingDao;
         this.feedDao = feedDao;
@@ -110,8 +107,7 @@ public class FilmDbService implements FilmService, MpaService, GenreService{
                 feedDao.addFeed(userId, EventEnum.LIKE, OperationEnum.ADD, filmId);
                 log.info("Пользователь с ID {} поставил лайк фильму с ID {}", userId, filmId);
             } else {
-                throw new ValidationException(String.format("Пользователь c ID %s уже " +
-                        "оценивал фильм с ID %s", userId, filmId));
+                feedDao.addFeed(userId, EventEnum.LIKE, OperationEnum.ADD, filmId);
             }
         } else {
             throw new NotFoundException(String.format("Нет фильма с ID %s", filmId));
@@ -165,6 +161,21 @@ public class FilmDbService implements FilmService, MpaService, GenreService{
         }
         return filmStorage.findSortFilmsByDirector(directorId,sortBy);
     }
+
+    @Override
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        return filmStorage.getCommonFilms(userId, friendId);
+    }
+
+    public List<Film> searchFilmsByDirectorOrName(String query, List<String> option) {
+        log.info("Передан запрос на поиск фильма по названию/режиссеру");
+        try {
+            return filmStorage.searchFilmsByDirectorOrName(query, option);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Не найден фильм по данному запросу");
+        }
+    }
+
     public void validate(Film film) {
         if (film.getName().isEmpty()) {
             throw new ValidationException("Название не может быть пустым");
