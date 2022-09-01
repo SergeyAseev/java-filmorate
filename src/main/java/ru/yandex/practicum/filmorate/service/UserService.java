@@ -73,5 +73,12 @@ public interface UserService {
      * @return список событий пользователя
      */
     List<Feed> retrieveUsersFeed(long userId);
-    public List <Optional<Film>> getRecommendations(long id);
+
+    /**
+     * Возвращаем рекомендованные фильмы
+     * @param ID пользователя, для которого подбираются рекомендации
+     * С помощью приватного метода getFilmsToRecommend выявляем фильмы для рекомендаций
+     * @return список список фильмов
+     */
+    List <Optional<Film>> getRecommendations(long id);
 }

@@ -125,8 +125,7 @@ public class UserDbStorage implements UserStorage {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT l.film_id from likes l" +
                 " where l.user_id=?", id);
         List<Long> userList = new ArrayList<>();
-        while(userRows.next())
-        {
+        while(userRows.next()) {
             userList.add(userRows.getLong("film_id"));
         }
         return userList;
