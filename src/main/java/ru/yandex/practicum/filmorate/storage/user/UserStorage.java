@@ -47,4 +47,10 @@ public interface UserStorage {
     List<User> getCommonFriends(long userId, long friendId);
 
     void removeFromFriends(long userId, long friendId);
+
+    /**
+     * Получаем лайки (id фильмов) конкретного пользователя
+     * @return список id всех фильмов, которые лайкнул пользователь
+     */
+    List<Long> getLikesByUser (long id);
 }
