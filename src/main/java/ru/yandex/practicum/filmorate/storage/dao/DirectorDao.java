@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.dao;
 import ru.yandex.practicum.filmorate.model.Director;
 
 import java.util.List;
+import java.util.Set;
 
 public interface DirectorDao {
 
@@ -44,5 +45,5 @@ public interface DirectorDao {
      * @param id идентификатор фильма
      * @return список режиссеров
      */
-    List<Director> getFilmDirectors(Long id);
+    Set<Director> findFilmDirectors(Long id);
 }

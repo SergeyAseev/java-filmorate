@@ -85,7 +85,6 @@ public class UserDbService implements UserService {
         return userStorage.retrieveAllUsers();
     }
 
-    // Добавил проверки на наличие пользователей в двух методах ниже
     @Override
     public List<User> retrieveFriends(long userId) {
         if (userStorage.retrieveUserById(userId).isPresent()) {
