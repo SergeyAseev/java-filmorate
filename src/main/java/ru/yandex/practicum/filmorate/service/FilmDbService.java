@@ -15,10 +15,13 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 
 @Slf4j
 @Service("FilmDbService")
-public class FilmDbService implements FilmService, MpaService, GenreService{
+public class FilmDbService implements FilmService, MpaService, GenreService {
 
     private final FilmStorage filmStorage;
     private final GenreDao genreDao;
@@ -160,21 +163,18 @@ public class FilmDbService implements FilmService, MpaService, GenreService{
         if (sortBy == null || sortBy.isBlank()) {
             throw new NotFoundException("sorting not specified");
         }
-        return filmStorage.findSortFilmsByDirector(directorId,sortBy);
+        return filmStorage.findSortFilmsByDirector(directorId, sortBy);
+    }
+
+    @Override
+    public Set<Film> searchFilmsByDirectorOrName(String query, List<String> option) {
+        log.info("Передан запрос на поиск фильма по названию/режиссеру");
+        return filmStorage.searchFilmsByDirectorOrName(query, option);
     }
 
     @Override
     public List<Film> getCommonFilms(long userId, long friendId) {
         return filmStorage.getCommonFilms(userId, friendId);
-    }
-
-    public List<Film> searchFilmsByDirectorOrName(String query, List<String> option) {
-        log.info("Передан запрос на поиск фильма по названию/режиссеру");
-        try {
-            return filmStorage.searchFilmsByDirectorOrName(query, option);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Не найден фильм по данному запросу");
-        }
     }
 
     public void validate(Film film) {

@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
+import java.util.Set;
 
 public interface FilmService {
 
@@ -76,5 +77,5 @@ public interface FilmService {
      * @param option поиск по имени режиссера или названию фильма как по отдельности, так и одновременно
      * @return список фильмов, название или имя режиссера которых содержит текст из query
      */
-    List<Film> searchFilmsByDirectorOrName(String query, List<String> option);
+    Set<Film> searchFilmsByDirectorOrName(String query, List<String> option);
 }

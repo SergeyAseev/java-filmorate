@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/films")
@@ -70,13 +71,18 @@ public class FilmController {
                                               @RequestParam String sortBy) {
         return filmService.findSortFilmsByDirector(directorId, sortBy);
     }
+
+
+    @GetMapping(value = "/search")
+    public Set<Film> searchFilmsByDirectorOrName(@RequestParam String query,
+                                                 @RequestParam(name = "by") List<String> option) {
+        return filmService.searchFilmsByDirectorOrName(query, option);
+    }
+    
     @GetMapping(value = "/common")
     public List<Film> getCommonFilms (@RequestParam long userId, @RequestParam long friendId) {
         return filmService.getCommonFilms(userId, friendId);
     }
-    @GetMapping(value = "/search")
-    public List<Film> searchFilmsByDirectorOrName(@RequestParam String query,
-                                                  @RequestParam(name = "by") List<String> option) {
-        return filmService.searchFilmsByDirectorOrName(query, option);
-    }
+
+
 }
