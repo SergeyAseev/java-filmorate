@@ -57,7 +57,7 @@ public class FilmDbStorage implements FilmStorage {
                 film.getDuration(),
                 film.getMpa().getId());
         if (film.getDirectors() != null && film.getDirectors().size() >= 0) {
-            List<Director> directors = new LinkedList<>();
+            Set<Director> directors = new HashSet<>();
             if (film.getDirectors().size() > 0) {
                 for (Director director : film.getDirectors()) {
                     if (!directors.contains(director)) {
@@ -69,7 +69,7 @@ public class FilmDbStorage implements FilmStorage {
             deleteDirectorByFilm(film);
             addDirectorByFilm(film);
         } else {
-            film.setDirectors(new ArrayList<>());
+            film.setDirectors(new HashSet<>());
             deleteDirectorByFilm(film);
         }
         return film;
@@ -184,8 +184,9 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> findSortFilmsByDirector(Integer directorId, String sortBy) {
-        if (findIdDirector(directorId) == null || findIdDirector(directorId).isEmpty()) {
-            throw new NotFoundException("Режиссера не существует");
+        List<Integer> idFilms =findIdFilms(directorId);
+        if (idFilms == null || idFilms.isEmpty()) {
+            throw new NotFoundException("Режиссера не существует или у режиссера нет фильмов");
         }
         if (sortBy.equals("year")) {
                 String sqlQuery = "SELECT * FROM films f left join MPA m ON f.MPA_ID = m.ID " +
@@ -219,7 +220,7 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
-    public List<Integer> findIdDirector(Integer directorId) {
+    public List<Integer> findIdFilms(Integer directorId) {
         final String sqlQuery = "select FILM_ID from FILMS_DIRECTORS where DIRECTOR_ID = ?";
         return jdbcTemplate.queryForList(sqlQuery, Integer.class,directorId);
     }
@@ -267,7 +268,7 @@ public class FilmDbStorage implements FilmStorage {
                         rs.getInt("duration"));
                 film.setMpa(mpaRatingDao.getFilmMpa(film.getId()));
                 film.setGenres(genreDao.getFilmGenres(film.getId()));
-                film.setDirectors(directorDao.getFilmDirectors(film.getId()));
+                film.setDirectors(directorDao.findFilmDirectors(film.getId()));
                 film.setLikes(likesDao.getFilmLikes(film.getId()));
                 return film;
             } catch (SQLException e) {
