@@ -9,9 +9,9 @@ import ru.yandex.practicum.filmorate.model.OperationEnum;
 
 import java.util.List;
 
-@Component("FeedDbStorage")
+@Component("FeedDaoStorage")
 @RequiredArgsConstructor
-public class FeedDbStorage  implements FeedDao{
+public class FeedDaoStorage  implements FeedDao{
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -23,7 +23,7 @@ public class FeedDbStorage  implements FeedDao{
 
     @Override
     public List<Feed> getFeed(long userId) {
-        String sql = "SELECT * FROM FEED where user_id = ? ;";
+        String sql = "SELECT * FROM FEED where user_id = ? order by time_ts asc;";
         return jdbcTemplate.query(sql, (rs, rowNum) -> new Feed(
                 rs.getLong("event_id"),
                 rs.getLong("user_id"),
