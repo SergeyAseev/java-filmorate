@@ -71,6 +71,7 @@ public interface FilmService {
      */
      List<Film> getCommonFilms(long userId, long friendId);
 
+     /**
      * Получаем фильмы через поисковый запрос
      * @param query текст-содержание запроса
      * @param option поиск по имени режиссера или названию фильма как по отдельности, так и одновременно

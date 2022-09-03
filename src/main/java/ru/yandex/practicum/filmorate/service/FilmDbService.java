@@ -177,15 +177,6 @@ public class FilmDbService implements FilmService, MpaService, GenreService {
         return filmStorage.getCommonFilms(userId, friendId);
     }
 
-    public List<Film> searchFilmsByDirectorOrName(String query, List<String> option) {
-        log.info("Передан запрос на поиск фильма по названию/режиссеру");
-        try {
-            return filmStorage.searchFilmsByDirectorOrName(query, option);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Не найден фильм по данному запросу");
-        }
-    }
-
     public void validate(Film film) {
         if (film.getName().isEmpty()) {
             throw new ValidationException("Название не может быть пустым");
