@@ -120,6 +120,17 @@ public class UserDbStorage implements UserStorage {
         });
     }
 
+    @Override
+    public List<Long> getLikesByUser (long id) {
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT l.film_id from likes l" +
+                " where l.user_id=?", id);
+        List<Long> userList = new ArrayList<>();
+        while(userRows.next()) {
+            userList.add(userRows.getLong("film_id"));
+        }
+        return userList;
+    }
+
     private User makeUser(ResultSet rs, int rowNum) {
         try {
             return new User(
