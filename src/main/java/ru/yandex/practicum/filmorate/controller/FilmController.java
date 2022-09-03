@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -72,9 +71,17 @@ public class FilmController {
         return filmService.findSortFilmsByDirector(directorId, sortBy);
     }
 
+
     @GetMapping(value = "/search")
     public Set<Film> searchFilmsByDirectorOrName(@RequestParam String query,
                                                  @RequestParam(name = "by") List<String> option) {
         return filmService.searchFilmsByDirectorOrName(query, option);
     }
+    
+    @GetMapping(value = "/common")
+    public List<Film> getCommonFilms (@RequestParam long userId, @RequestParam long friendId) {
+        return filmService.getCommonFilms(userId, friendId);
+    }
+
+
 }

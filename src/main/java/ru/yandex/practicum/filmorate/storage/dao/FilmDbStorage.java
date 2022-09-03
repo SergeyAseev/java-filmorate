@@ -122,6 +122,14 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        String sql = "select f.* from films f where f.id = " +
+                "  (select l.FILM_ID from likes l " +
+                "where l.USER_ID= ?and  l.film_id = (select ll.FILM_ID from likes ll where ll.USER_ID=? ))";
+        return jdbcTemplate.query(sql, this::makeFilm, userId, friendId);
+    }
+
+    @Override
     public List<Film> returnTopFilmsByYear(int count, int year) {
         String sql = "SELECT f.id, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, count(distinct l.USER_ID) FROM films f " +
                 "left join MPA m ON f.MPA_ID = m.ID " +
