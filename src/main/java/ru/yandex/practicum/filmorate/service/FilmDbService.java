@@ -20,11 +20,12 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service("FilmDbService")
-public class FilmDbService implements FilmService, MpaService, GenreService{
+public class FilmDbService implements FilmService, MpaService, GenreService {
 
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
@@ -36,7 +37,7 @@ public class FilmDbService implements FilmService, MpaService, GenreService{
                          @Qualifier("UserDbStorage") UserStorage userStorage,
                          GenreDao genreDao,
                          MpaRatingDao mpaRatingDao
-                         ) {
+    ) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.genreDao = genreDao;
@@ -164,17 +165,13 @@ public class FilmDbService implements FilmService, MpaService, GenreService{
         if (sortBy == null || sortBy.isBlank()) {
             throw new NotFoundException("sorting not specified");
         }
-        return filmStorage.findSortFilmsByDirector(directorId,sortBy);
+        return filmStorage.findSortFilmsByDirector(directorId, sortBy);
     }
 
     @Override
-    public List<Film> searchFilmsByDirectorOrName(String query, List<String> option) {
+    public Set<Film> searchFilmsByDirectorOrName(String query, List<String> option) {
         log.info("Передан запрос на поиск фильма по названию/режиссеру");
-        try {
-            return filmStorage.searchFilmsByDirectorOrName(query, option);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Не найден фильм по данному запросу");
-        }
+        return filmStorage.searchFilmsByDirectorOrName(query, option);
     }
 
     public void validate(Film film) {
