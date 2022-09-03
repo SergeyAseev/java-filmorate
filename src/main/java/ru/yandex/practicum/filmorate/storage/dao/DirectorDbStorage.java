@@ -15,7 +15,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @Slf4j
@@ -61,7 +63,7 @@ public class DirectorDbStorage implements DirectorDao {
     @Override
     public Director updateDirector(Director director) {
         Director directorId = findDirectorById(director.getId());
-        if (director.getId() == directorId.getId()) {
+        if (directorId != null) {
             String sqlQuery = "update DIRECTORS set DIRECTOR_NAME = ? where DIRECTOR_ID = ?";
             jdbcTemplate.update(sqlQuery,
                     director.getName(),
@@ -80,18 +82,13 @@ public class DirectorDbStorage implements DirectorDao {
     }
 
     @Override
-    public List<Director> getFilmDirectors(Long id) {
-        final String sqlQuery = "select DIRECTOR_ID from FILMS_DIRECTORS where FILM_ID = ?";
-        List<Integer> integers = jdbcTemplate.queryForList(sqlQuery,Integer.class,id);
-        List<Director> directors = new ArrayList<>();
-        if (integers != null) {
-            final String sqlGenre = "select * from DIRECTORS where DIRECTOR_ID = ?";
-            for (Integer integer : integers) {
-                final Director director = jdbcTemplate.queryForObject(sqlGenre, this::makeDirector, integer);
-                directors.add(director);
-            }
-        }
-        return directors;
+    public Set<Director> findFilmDirectors(Long id) {
+        final String sqlQuery = "select * from DIRECTORS d " +
+                "left join FILMS_DIRECTORS fd on d.DIRECTOR_ID = fd. DIRECTOR_ID where FILM_ID = ? ";
+        List<Director> directors = jdbcTemplate.query(sqlQuery,this::makeDirector,id);
+        Set<Director> directorSet = new HashSet<>();
+        directorSet.addAll(directors);
+        return directorSet;
     }
 
     private Director makeDirector (ResultSet rs, int rowNum) throws SQLException {

@@ -108,8 +108,7 @@ public class FilmDbService implements FilmService, MpaService, GenreService{
                 log.info("Пользователь с ID {} поставил лайк фильму с ID {}", userId, filmId);
             }
             else {
-                throw new ValidationException(String.format("Пользователь c ID %s уже " +
-                        "оценивал фильм с ID %s", userId, filmId));
+                feedDao.addFeed(userId, EventEnum.LIKE, OperationEnum.ADD, filmId);
             }
         } else {
             throw new NotFoundException(String.format("Нет фильма с ID %s", filmId));

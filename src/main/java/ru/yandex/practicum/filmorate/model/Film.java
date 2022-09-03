@@ -21,7 +21,7 @@ public class Film {
     private int duration;
     private List<Genre> genres = new ArrayList<>();
     private Mpa mpa;
-    private List<Director> directors;
+    private Set<Director> directors;
     private Set<Long> likes = new HashSet<>(); //храним ID пользователей, которые поставили лайки
 
     public Film(long id,
