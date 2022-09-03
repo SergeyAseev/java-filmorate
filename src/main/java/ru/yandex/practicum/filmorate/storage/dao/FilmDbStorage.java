@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -93,6 +94,8 @@ public class FilmDbStorage implements FilmStorage {
                 .orElseThrow(() -> new NotFoundException(String.format("Фильм с ID %d не найден", filmId))));
     }
 
+    // Упростил и исправил запрос ниже, иначе выдавался некорректный объект
+    // после сборки Фильма через makeFilm() с жанрами
     @Override
     public List<Film> retrieveAllFilms() {
         String sql = "SELECT f.id, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION FROM films f left join MPA m ON f.MPA_ID = m.ID " +
@@ -115,6 +118,14 @@ public class FilmDbStorage implements FilmStorage {
                 "order by count(distinct l.USER_ID) desc " +
                 "limit ?; ";
         return jdbcTemplate.query(sql, this::makeFilm, count);
+    }
+
+    @Override
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        String sql = "select f.* from films f where f.id = " +
+                "  (select l.FILM_ID from likes l " +
+                "where l.USER_ID= ?and  l.film_id = (select ll.FILM_ID from likes ll where ll.USER_ID=? ))";
+        return jdbcTemplate.query(sql, this::makeFilm, userId, friendId);
     }
 
     @Override
@@ -215,6 +226,29 @@ public class FilmDbStorage implements FilmStorage {
     public void deleteDirectorByFilm(Film film) {
         final String sqlQuery = "DELETE FROM FILMS_DIRECTORS WHERE FILM_ID = ?";
         jdbcTemplate.update(sqlQuery, film.getId());
+    }
+
+    @Override
+    public List<Film> searchFilmsByDirectorOrName(String query, List<String> option) {
+        query = query.toUpperCase();
+        String sql = "SELECT f.id, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION FROM films f " +
+                "left join MPA m ON f.MPA_ID = m.ID " +
+                "left join FILM_GENRE_LINKS fgl ON f.id = fgl.FILM_ID " +
+                "left join GENRE g on fgl.GENRE_ID = g.ID " +
+                "left join FILMS_DIRECTORS fd ON f.id = fd.FILM_ID " +
+                "left join DIRECTORS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID ";
+        if (option.contains("director") && option.contains("title") && (option.size() == 2)) {
+            sql += "WHERE UPPER(f.NAME) REGEXP ? OR UPPER(d.DIRECTOR_NAME) REGEXP ? ORDER BY f.id DESC";
+            return jdbcTemplate.query(sql, this::makeFilm, query, query);
+        } else if (option.contains("director") && (option.size() == 1)) {
+            sql += "WHERE UPPER(d.DIRECTOR_NAME) REGEXP ?";
+            return jdbcTemplate.query(sql, this::makeFilm, query);
+        } else if (option.contains("title") && (option.size() == 1)) {
+            sql += "WHERE UPPER(f.NAME) REGEXP ?";
+            return jdbcTemplate.query(sql, this::makeFilm, query);
+        } else {
+            throw new ValidationException("Некорректный запрос: можно искать только по названию и/или режиссеру.");
+        }
     }
 
     /**
