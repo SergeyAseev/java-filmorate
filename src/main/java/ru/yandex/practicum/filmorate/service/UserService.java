@@ -76,9 +76,10 @@ public interface UserService {
 
     /**
      * Возвращаем рекомендованные фильмы
+     *
      * @param id пользователя, для которого подбираются рекомендации
-     * С помощью приватного метода getFilmsToRecommend выявляем фильмы для рекомендаций
+     *           С помощью приватного метода getFilmsToRecommend выявляем фильмы для рекомендаций
      * @return список список фильмов
      */
-    List <Optional<Film>> getRecommendations(long id);
+    List<Optional<Film>> getRecommendations(long id);
 }
