@@ -123,9 +123,9 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getCommonFilms(long userId, long friendId) {
-        String sql = "select f.* from films f where f.id = " +
-                "  (select l.FILM_ID from likes l " +
-                "where l.USER_ID= ?and  l.film_id = (select ll.FILM_ID from likes ll where ll.USER_ID=? ))";
+        String sql = "select f.* from films f " +
+                " inner join (select l.film_id from likes l where l.user_id = ? ) ll  on  f.id = ll.film_id"+
+                " inner join (select l.film_id from likes l where l.user_id = ? ) ll2 on ll.film_id = ll2.film_id";
         return jdbcTemplate.query(sql, this::makeFilm, userId, friendId);
     }
 

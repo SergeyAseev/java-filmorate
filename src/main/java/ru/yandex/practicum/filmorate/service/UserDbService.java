@@ -148,13 +148,14 @@ public class UserDbService implements UserService {
     }
 
     @Override
-    public List<Optional<Film>> getRecommendations(long id) {
+    public List<Film> getRecommendations(long id) {
         List<Long> filmsToRecommend = getFilmsToRecommend(id);
         Comparator<Long> comparator = Comparator.naturalOrder();
         filmsToRecommend.sort(comparator);
-        List<Optional<Film>> recommendations = new ArrayList<>();
+        List<Film> recommendations = new ArrayList<>();
         for (long filmId : filmsToRecommend) {
-            recommendations.add(filmStorage.retrieveFilmById(filmId));
+            recommendations.add(filmStorage.retrieveFilmById(filmId).orElseThrow(() ->
+                    new NotFoundException(String.format("Не найден фильм с ID %s", filmId))));
         }
         return recommendations;
     }

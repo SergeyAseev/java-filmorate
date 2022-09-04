@@ -36,7 +36,7 @@ public class ReviewController {
 
     @PutMapping
     public Review update(@Valid @RequestBody Review review) {
-        log.info("Send post request /reviews {}", review);
+        log.info("Send put request /reviews {}", review);
         return reviewService.update(review);
     }
 
