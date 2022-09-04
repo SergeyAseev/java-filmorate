@@ -1,10 +1,9 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
-
 import java.util.List;
 import java.util.Optional;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 
 public interface UserStorage {
 
@@ -47,10 +46,10 @@ public interface UserStorage {
     List<User> getCommonFriends(long userId, long friendId);
 
     void removeFromFriends(long userId, long friendId);
-
     /**
-     * Получаем лайки (id фильмов) конкретного пользователя
-     * @return список id всех фильмов, которые лайкнул пользователь
+     * Получаем список рекомендованных фильмов
+     * @param userId идентификатор пользователя
+     * @return список рекомендованных фильмов
      */
-    List<Long> getLikesByUser (long id);
+    List<Film> getRecommendation(long userId);
 }

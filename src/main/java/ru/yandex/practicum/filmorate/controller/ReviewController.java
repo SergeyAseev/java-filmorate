@@ -60,13 +60,13 @@ public class ReviewController {
 
     @DeleteMapping("/{id}/like/{userId}")
     public void deleteLike(@PathVariable Long id, @PathVariable Long userId) {
-        log.info("Send put request /reviews/{}/like/{}", id, userId);
+        log.info("Send delete request /reviews/{}/like/{}", id, userId);
         reviewService.deleteLike(id, userId);
     }
 
     @DeleteMapping("/{id}/dislike/{userId}")
     public void deleteDislike(@PathVariable Long id, @PathVariable Long userId) {
-        log.info("Send put request /reviews/{}/dislike/{}", id, userId);
+        log.info("Send delete request /reviews/{}/dislike/{}", id, userId);
         reviewService.deleteDislike(id, userId);
     }
 }
