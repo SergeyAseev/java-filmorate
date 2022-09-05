@@ -1,11 +1,9 @@
 package ru.yandex.practicum.filmorate.service;
 
+import java.util.List;
 import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface UserService {
 
@@ -73,12 +71,10 @@ public interface UserService {
      * @return список событий пользователя
      */
     List<Feed> retrieveUsersFeed(long userId);
-
     /**
      * Возвращаем рекомендованные фильмы
-     * @param id пользователя, для которого подбираются рекомендации
-     * С помощью приватного метода getFilmsToRecommend выявляем фильмы для рекомендаций
-     * @return список список фильмов
+     * @param userId идентификатор пользователя
+     * @return список рекомендованных фильмов
      */
-    List <Film> getRecommendations(long id);
+    List<Film> getRecommendation(long userId);
 }

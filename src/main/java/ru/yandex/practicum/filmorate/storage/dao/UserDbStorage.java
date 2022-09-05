@@ -1,27 +1,30 @@
 package ru.yandex.practicum.filmorate.storage.dao;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-
+import java.util.*;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.stream.Collectors;
+import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 @Component("UserDbStorage")
 public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
+    private final FilmService filmService;
 
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
+    public UserDbStorage(JdbcTemplate jdbcTemplate, FilmService filmService) {
         this.jdbcTemplate = jdbcTemplate;
+        this.filmService = filmService;
     }
 
     @Override
@@ -121,14 +124,20 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public List<Long> getLikesByUser (long id) {
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT l.film_id from likes l" +
-                " where l.user_id=?", id);
-        List<Long> userList = new ArrayList<>();
-        while(userRows.next()) {
-            userList.add(userRows.getLong("film_id"));
+    public List<Film> getRecommendation(long userId) {
+        final String sqlQueryByUser = "SELECT L.FILM_ID FROM LIKES L WHERE L.USER_ID = " + userId;
+        Set<Long> idsFilmsByUser = new HashSet<>(jdbcTemplate.queryForList(sqlQueryByUser, Long.class));
+
+        final String sqlQuery = "SELECT L.FILM_ID FROM LIKES L JOIN LIKES L2 ON L.USER_ID = L2.USER_ID AND L2.USER_ID = L.USER_ID";
+        Set<Long> idsFilmsByOtherUser = new HashSet<>(jdbcTemplate.queryForList(sqlQuery, Long.class));
+
+        if (idsFilmsByUser != null && idsFilmsByOtherUser != null) {
+            idsFilmsByOtherUser.removeAll(idsFilmsByUser);
+            return idsFilmsByOtherUser.stream()
+                    .map(filmService::retrieveFilmById)
+                    .collect(Collectors.toList());
         }
-        return userList;
+        return List.of();
     }
 
     private User makeUser(ResultSet rs, int rowNum) {

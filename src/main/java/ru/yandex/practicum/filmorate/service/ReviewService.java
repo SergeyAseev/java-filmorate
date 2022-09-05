@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.*;
@@ -19,11 +18,7 @@ public class ReviewService {
     private final FeedDao feedDao;
 
     public Review findById(Long id) {
-        try {
-            return reviewDao.findById(id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException(String.format("Отзыв по id=%s не найден!", id), e);
-        }
+        return reviewDao.findById(id);
     }
 
     public List<Review> findAllByFilmId(Long filmId, Integer count) {
