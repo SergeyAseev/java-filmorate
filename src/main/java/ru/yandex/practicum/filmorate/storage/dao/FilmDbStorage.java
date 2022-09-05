@@ -60,11 +60,7 @@ public class FilmDbStorage implements FilmStorage {
         if (film.getDirectors() != null && film.getDirectors().size() >= 0) {
             Set<Director> directors = new HashSet<>();
             if (film.getDirectors().size() > 0) {
-                for (Director director : film.getDirectors()) {
-                    if (!directors.contains(director)) {
-                        directors.add(director);
-                    }
-                }
+                directors.addAll(film.getDirectors());
             }
             film.setDirectors(directors);
             deleteDirectorByFilm(film);
@@ -123,9 +119,12 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getCommonFilms(long userId, long friendId) {
-        String sql = "select f.* from films f " +
-                " inner join (select l.film_id from likes l where l.user_id = ? ) ll  on  f.id = ll.film_id"+
-                " inner join (select l.film_id from likes l where l.user_id = ? ) ll2 on ll.film_id = ll2.film_id";
+        String sql = "select * from films f " +
+                    " left join MPA m on (f.MPA_ID = m.MPA_ID " +
+                    " left join DIRECTORS d on (f.DIRECTOR_ID = d.DIRECTOR_ID " +
+                    " join LIKES lu on (lu.FILM_ID = f.FILM_ID) " +
+                    " join LIKES lf on (lf.FILM_ID = f.FILM_ID) " +
+                    " where lu.USER_ID = ? AND lf.USER_ID = ?";
         return jdbcTemplate.query(sql, this::makeFilm, userId, friendId);
     }
 
@@ -196,8 +195,7 @@ public class FilmDbStorage implements FilmStorage {
                     "left join FILMS_DIRECTORS fd ON f.id = fd.FILM_ID " +
                     "left join DIRECTORS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID WHERE fd.DIRECTOR_ID = ? " +
                     "order by extract(year from f.RELEASE_DATE) ";
-            List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm, directorId);
-            return films;
+            return jdbcTemplate.query(sqlQuery, this::makeFilm, directorId);
         } else if (sortBy.equals("likes")) {
             String sqlQuery = "SELECT f.id, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, count(distinct l.USER_ID) " +
                     "FROM films f left join MPA m ON f.MPA_ID = m.ID " +
@@ -208,8 +206,7 @@ public class FilmDbStorage implements FilmStorage {
                     "left join DIRECTORS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID WHERE fd.DIRECTOR_ID = ? " +
                     "group by f.id, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION " +
                     "order by count(l.USER_ID) desc";
-            List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm, directorId);
-            return films;
+            return jdbcTemplate.query(sqlQuery, this::makeFilm, directorId);
         }
         return null;
     }
@@ -275,10 +272,10 @@ public class FilmDbStorage implements FilmStorage {
                     rs.getString("description"),
                     LocalDate.parse(rs.getString("release_date")),
                     rs.getInt("duration"));
-            film.setMpa(mpaRatingDao.getFilmMpa(film.getId()));
-            film.setGenres(genreDao.getFilmGenres(film.getId()));
-            film.setDirectors(directorDao.findFilmDirectors(film.getId()));
-            film.setLikes(likesDao.getFilmLikes(film.getId()));
+            if (film.getMpa() == null) film.setMpa(mpaRatingDao.getFilmMpa(film.getId()));
+            if (film.getGenres() == null) film.setGenres(genreDao.getFilmGenres(film.getId()));
+            if (film.getDirectors() == null)film.setDirectors(directorDao.findFilmDirectors(film.getId()));
+            if (film.getLikes() == null) film.setLikes(likesDao.getFilmLikes(film.getId()));
             return film;
         } catch (SQLException e) {
             throw new RuntimeException(e);

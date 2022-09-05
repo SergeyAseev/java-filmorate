@@ -131,13 +131,10 @@ public class UserDbStorage implements UserStorage {
         final String sqlQuery = "SELECT L.FILM_ID FROM LIKES L JOIN LIKES L2 ON L.USER_ID = L2.USER_ID AND L2.USER_ID = L.USER_ID";
         Set<Long> idsFilmsByOtherUser = new HashSet<>(jdbcTemplate.queryForList(sqlQuery, Long.class));
 
-        if (idsFilmsByUser != null && idsFilmsByOtherUser != null) {
-            idsFilmsByOtherUser.removeAll(idsFilmsByUser);
-            return idsFilmsByOtherUser.stream()
-                    .map(filmService::retrieveFilmById)
-                    .collect(Collectors.toList());
-        }
-        return List.of();
+        idsFilmsByOtherUser.removeAll(idsFilmsByUser);
+        return idsFilmsByOtherUser.stream()
+                .map(filmService::retrieveFilmById)
+                .collect(Collectors.toList());
     }
 
     private User makeUser(ResultSet rs, int rowNum) {

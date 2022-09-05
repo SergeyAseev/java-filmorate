@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
@@ -19,10 +17,10 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     private int duration;
-    private List<Genre> genres = new ArrayList<>();
+    private List<Genre> genres;
     private Mpa mpa;
     private Set<Director> directors;
-    private Set<Long> likes = new HashSet<>(); //храним ID пользователей, которые поставили лайки
+    private Set<Long> likes;
 
     public Film(long id,
                 String name,
