@@ -1,15 +1,13 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import java.util.List;
+import java.util.Set;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-
-import javax.validation.Valid;
-import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/films")
@@ -78,11 +76,9 @@ public class FilmController {
                                                  @RequestParam(name = "by") List<String> option) {
         return filmService.searchFilmsByDirectorOrName(query, option);
     }
-    
+
     @GetMapping(value = "/common")
     public List<Film> getCommonFilms (@RequestParam long userId, @RequestParam long friendId) {
         return filmService.getCommonFilms(userId, friendId);
     }
-
-
 }

@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.service;
 
+import java.util.Set;
+import java.util.List;
+import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.*;
@@ -12,11 +14,6 @@ import ru.yandex.practicum.filmorate.storage.dao.FeedDao;
 import ru.yandex.practicum.filmorate.storage.dao.GenreDao;
 import ru.yandex.practicum.filmorate.storage.dao.MpaRatingDao;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -26,7 +23,6 @@ public class FilmDbService implements FilmService, MpaService, GenreService {
     private final FilmStorage filmStorage;
     private final GenreDao genreDao;
     private final MpaRatingDao mpaRatingDao;
-
     private final FeedDao feedDao;
     @Autowired
     public FilmDbService(@Qualifier("FilmDbStorage") FilmStorage filmStorage,

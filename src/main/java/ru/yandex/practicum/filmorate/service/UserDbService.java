@@ -1,24 +1,17 @@
 package ru.yandex.practicum.filmorate.service;
 
+import java.util.*;
+import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.EventEnum;
-import ru.yandex.practicum.filmorate.model.Feed;
-import ru.yandex.practicum.filmorate.model.OperationEnum;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.dao.FeedDao;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-
-import java.time.LocalDate;
-import java.util.*;
 
 @Slf4j
 @Service("UserDbService")
@@ -26,7 +19,6 @@ public class UserDbService implements UserService {
 
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
-
     private final FeedDao feedDao;
 
     @Autowired
@@ -72,7 +64,6 @@ public class UserDbService implements UserService {
         log.info("Удален пользователь с ID = {}", userId);
     }
 
-
     @Override
     public User retrieveUserById(long userId) {
         return userStorage.retrieveUserById(userId)
@@ -115,49 +106,10 @@ public class UserDbService implements UserService {
         return feedDao.getFeed(userId);
     }
 
-
-    private List<Long> getFilmsToRecommend(long id) {
-        List<User> allUsers = retrieveAllUsers();
-        List<Long> likesUser = userStorage.getLikesByUser(id);
-        if (likesUser.size() == 0) {
-            return new ArrayList<>();
-        }
-        Set<Long> likesUserSet = new LinkedHashSet<>(likesUser);
-        long percent = 0;
-        long mostId = 0;
-        for (User usr : allUsers) {
-            Set<Long> bufferUserSet = likesUserSet;
-            Set<Long> likesFriendSet = new LinkedHashSet<>(userStorage.getLikesByUser(usr.getId())); // получили лайки пользователя
-            bufferUserSet.retainAll(likesFriendSet);
-            likesFriendSet.addAll(likesUserSet);
-            if ((likesFriendSet.size() != 0) && (likesUserSet.size() != 0) && (usr.getId() != id)) {
-                if (bufferUserSet.size() > percent) {
-                    percent = bufferUserSet.size();
-                    mostId = usr.getId();
-                }
-            }
-        }
-        List<Long> films = userStorage.getLikesByUser(mostId);
-        List<Long> filmsToRecommend = new ArrayList<>();
-        for (long filmId : films) {
-            if (!likesUser.contains(filmId)) {
-                filmsToRecommend.add(filmId);
-            }
-        }
-        return filmsToRecommend;
-    }
-
     @Override
-    public List<Film> getRecommendations(long id) {
-        List<Long> filmsToRecommend = getFilmsToRecommend(id);
-        Comparator<Long> comparator = Comparator.naturalOrder();
-        filmsToRecommend.sort(comparator);
-        List<Film> recommendations = new ArrayList<>();
-        for (long filmId : filmsToRecommend) {
-            recommendations.add(filmStorage.retrieveFilmById(filmId).orElseThrow(() ->
-                    new NotFoundException(String.format("Не найден фильм с ID %s", filmId))));
-        }
-        return recommendations;
+    public List<Film> getRecommendation(long userId) {
+        log.info("Возвращаем рекомендованные фильмы");
+        return userStorage.getRecommendation(userId);
     }
 
     protected void validate(User user) {

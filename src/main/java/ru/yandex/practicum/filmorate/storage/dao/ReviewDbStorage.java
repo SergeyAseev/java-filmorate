@@ -1,6 +1,10 @@
 package ru.yandex.practicum.filmorate.storage.dao;
 
 import java.util.List;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+import org.springframework.dao.EmptyResultDataAccessException;
 import java.util.Optional;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,9 +28,11 @@ public class ReviewDbStorage implements ReviewDao {
                 " JOIN USERS U ON U.ID = R.USER_ID" +
                 " JOIN FILMS F ON F.ID = R.FILM_ID" +
                 " WHERE R.ID = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, this::makeReview, id)).orElseThrow(
-                () -> new NotFoundException(String.format("Отзыв по id=%s не найден!", id))
-        );
+        try {
+            return jdbcTemplate.queryForObject(sqlQuery, this::makeReview, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException(String.format("Отзыв по id=%s не найден!", id), e);
+        }
     }
 
     @Override
