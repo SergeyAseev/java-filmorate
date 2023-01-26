@@ -1,26 +1,31 @@
 package ru.yandex.practicum.filmorate.service;
 
+import java.util.*;
+import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.storage.dao.FeedDao;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-
-import java.time.LocalDate;
-import java.util.*;
 
 @Slf4j
 @Service("UserDbService")
-public class UserDbService implements UserService{
+public class UserDbService implements UserService {
 
     private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
+    private final FeedDao feedDao;
 
     @Autowired
-    public UserDbService(@Qualifier("UserDbStorage") UserStorage userStorage) {
+    public UserDbService(@Qualifier("UserDbStorage") UserStorage userStorage, FilmStorage filmStorage, FeedDao feedDao) {
         this.userStorage = userStorage;
+        this.feedDao = feedDao;
+        this.filmStorage = filmStorage;
     }
 
     @Override
@@ -42,12 +47,14 @@ public class UserDbService implements UserService{
     public void addFriend(long userId, long friendId) {
         retrieveUserById(friendId);
         userStorage.addFriends(userId, friendId);
+        feedDao.addFeed(userId, EventEnum.FRIEND, OperationEnum.ADD, friendId);
         log.info("Добавлен друг с ID = {} пользователю с ID = {}", friendId, userId);
     }
 
     @Override
     public void removeFriend(long userId, long friendId) {
         userStorage.removeFromFriends(userId, friendId);
+        feedDao.addFeed(userId, EventEnum.FRIEND, OperationEnum.REMOVE, friendId);
         log.info("Удален друг с ID = {} у пользователя с ID = {}", friendId, userId);
     }
 
@@ -56,7 +63,6 @@ public class UserDbService implements UserService{
         userStorage.removeUserById(userId);
         log.info("Удален пользователь с ID = {}", userId);
     }
-
 
     @Override
     public User retrieveUserById(long userId) {
@@ -72,14 +78,38 @@ public class UserDbService implements UserService{
 
     @Override
     public List<User> retrieveFriends(long userId) {
-        log.info("Возвращаем друзей пользователя с ID = {}", userId);
-        return userStorage.getFriends(userId);
+        if (userStorage.retrieveUserById(userId).isPresent()) {
+            log.info("Возвращаем друзей пользователя с ID = {}", userId);
+            return userStorage.getFriends(userId);
+        } else {
+            log.warn("Нет пользователя с ID = {}", userId);
+            throw new NotFoundException("Не найден пользователь с ID " + userId);
+        }
     }
 
     @Override
     public List<User> retrieveCommonFriends(long userId, long friendId) {
-        log.info("Возвращаем общих друзей пользователей с ID = {} и с ID = {}", userId, friendId);
-        return userStorage.getCommonFriends(userId, friendId);
+        if (userStorage.retrieveUserById(userId).isPresent()
+                && userStorage.retrieveUserById(friendId).isPresent()) {
+            log.info("Возвращаем общих друзей пользователей с ID = {} и с ID = {}", userId, friendId);
+            return userStorage.getCommonFriends(userId, friendId);
+        } else {
+            log.warn("Нет пользователя с указанным ID");
+            throw new NotFoundException("Не найден пользователь с указанным ID");
+        }
+    }
+
+    @Override
+    public List<Feed> retrieveUsersFeed(long userId) {
+        retrieveUserById(userId);
+        log.info("Возвращаем события для пользователя с ID = {}", userId);
+        return feedDao.getFeed(userId);
+    }
+
+    @Override
+    public List<Film> getRecommendation(long userId) {
+        log.info("Возвращаем рекомендованные фильмы");
+        return userStorage.getRecommendation(userId);
     }
 
     protected void validate(User user) {

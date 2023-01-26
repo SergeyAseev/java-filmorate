@@ -1,9 +1,9 @@
 package ru.yandex.practicum.filmorate.service;
 
-import ru.yandex.practicum.filmorate.model.User;
-
 import java.util.List;
-import java.util.Optional;
+import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 
 public interface UserService {
 
@@ -64,4 +64,17 @@ public interface UserService {
      * @return список значений, который хранит всех пользователей
      */
     List<User> retrieveAllUsers();
+
+    /**
+     * Возвращаем ленту событий пользователя
+     * @param userId ID пользователя
+     * @return список событий пользователя
+     */
+    List<Feed> retrieveUsersFeed(long userId);
+    /**
+     * Возвращаем рекомендованные фильмы
+     * @param userId идентификатор пользователя
+     * @return список рекомендованных фильмов
+     */
+    List<Film> getRecommendation(long userId);
 }

@@ -1,13 +1,13 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import java.util.List;
+import java.util.Set;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-
-import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/films")
@@ -16,7 +16,7 @@ public class FilmController {
     private final FilmService filmService;
 
     @Autowired
-    public FilmController (@Qualifier("FilmDbService")FilmService filmService) {
+    public FilmController(@Qualifier("FilmDbService") FilmService filmService) {
         this.filmService = filmService;
     }
 
@@ -58,8 +58,27 @@ public class FilmController {
     }
 
     @GetMapping(value = "/popular")
-    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
-        return filmService.returnPopularFilms(count);
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count,
+                                      @RequestParam(defaultValue = "-1") int genreId,
+                                      @RequestParam(defaultValue = "-1") int year) {
+        return filmService.returnPopularFilms(count, genreId, year);
     }
 
+    @GetMapping("/director/{directorId}")
+    public List<Film> findSortFilmsByDirector(@PathVariable Integer directorId,
+                                              @RequestParam String sortBy) {
+        return filmService.findSortFilmsByDirector(directorId, sortBy);
+    }
+
+
+    @GetMapping(value = "/search")
+    public Set<Film> searchFilmsByDirectorOrName(@RequestParam String query,
+                                                 @RequestParam(name = "by") List<String> option) {
+        return filmService.searchFilmsByDirectorOrName(query, option);
+    }
+
+    @GetMapping(value = "/common")
+    public List<Film> getCommonFilms (@RequestParam long userId, @RequestParam long friendId) {
+        return filmService.getCommonFilms(userId, friendId);
+    }
 }
