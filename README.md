@@ -1,5 +1,5 @@
 # java-filmorate (сервис для поиска фильмов среди друзей на основе выставленных оценок)
-Стэк: Java 11, PostgresSQL, Maven, Lombok.
+Стэк: Java 11, H2, Maven, Lombok.
 
 ![Снимок базы](https://user-images.githubusercontent.com/23657190/180660600-8afb5d58-35bd-43e4-8334-10173a2508f9.PNG)
 
